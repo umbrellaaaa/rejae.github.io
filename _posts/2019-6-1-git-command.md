@@ -8,7 +8,10 @@ header-img:
 catalog: true
 tags:
     - Git
+
+<p id = "build"></p>
 ---
+
 ## 前言
 Workspace：工作区
 
@@ -300,7 +303,7 @@ Git的设置文件为.gitconfig，它可以在用户主目录下（全局配置�
 
   #you should just update the existing remote:
 
-  $git remote set-url origin xxx   (like :"git@github.com:ppreyer/first_app.git")
+
 
   # 下载远程仓库的所有变动
 
@@ -389,6 +392,11 @@ Git的设置文件为.gitconfig，它可以在用户主目录下（全局配置�
 ## 后记
 
 ## 更新文件到github
+
+
+  $git remote set-url origin xxx   (like :"git@github.com:ppreyer/first_app.git")
+
+###git rebase --abort 解决rebase 1/2
 
 1.输入指令：git add 文件名称或者 git add.
 
