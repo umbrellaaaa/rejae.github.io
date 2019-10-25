@@ -100,7 +100,9 @@ def get_oof(clf, X_train, y_train, X_test):
 # 将数据换成你的数据
 
 X_train = np.random.random((1000, 10))  # 1000 * 10
+
 y_train = np.random.random_integers(0, 1, (1000,))  # 1000
+
 X_test = np.random.random((500, 10))  # 500 * 10
 
 # 将你的每个分类器都调用get_oof函数，并把它们的结果合并，就得到了新的训练和测试数据new_train,new_test
