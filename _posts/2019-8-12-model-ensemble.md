@@ -47,6 +47,8 @@ Stacking 与 bagging 和 boosting 主要存在两方面的差异。
 - 其次，stacking 学习用元模型组合基础模型，而bagging 和 boosting 则根据确定性算法组合弱学习器。
 
 staking的python实现：
+
+
 ```python
 
 # 模型融合 Stacking
@@ -90,7 +92,9 @@ def get_oof(clf, X_train, y_train, X_test):
     oof_test = oof_test_skf.mean(axis=0)  # 对每一则交叉验证的结果取平均
     
     return oof_train, oof_test  # 返回当前分类器对训练集和测试集的预测结果
+```
 
+```python
 # 将数据换成你的数据
 X_train = np.random.random((1000, 10))  # 1000 * 10
 y_train = np.random.random_integers(0, 1, (1000,))  # 1000
@@ -110,7 +114,6 @@ new_test = np.concatenate(new_test, axis=1)
 clf = RandomForestRegressor()
 clf.fit(new_train, y_train)
 prdict_result = clf.predict(new_test)
-
 ```
 stacking代码总结，代码实现的重要流程分析：<br>
 构建输出矩阵oof_train，shape为(train.shape,1)。构建K倍测试集大小的测试结果集矩阵，shape为(K,test.shape,1)<br>
