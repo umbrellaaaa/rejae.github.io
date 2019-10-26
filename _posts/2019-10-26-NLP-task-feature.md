@@ -16,7 +16,7 @@ tags:
 ## 前言
 
 
-![](https://github.com/rejae/rejae.github.io/tree/master/img/20191026transformer_example1.jpg)
+![](http://ww2.sinaimg.cn/large/006tNc79gw1fb0jaxllv6j30ol0be77b.jpg)
 
 NLP任务的特点和图像有极大的不同，上图展示了一个例子，NLP的输入往往是一句话或者一篇文章，所以它有几个特点：
 - 首先，输入是个一维线性序列，这个好理解；
