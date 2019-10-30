@@ -52,7 +52,7 @@ staking的python实现：
 ```python
 
 # 模型融合 Stacking
-将第i层的预测结果作为下一层的输入数据，具体的:<br>
+将第i层的预测结果作为下一层的输入数据，具体的:
 
 return oof_train, oof_test  # 返回当前分类器对训练集和测试集的预测结果;
 
@@ -78,17 +78,22 @@ def get_oof(clf, X_train, y_train, X_test):
     # X_test : 500 * 10
 
     oof_train = np.zeros((X_train.shape[0], 1))  # 1000 * 1  Stacking后训练数据的输出
+
     oof_test_skf = np.empty((_N_FOLDS, X_test.shape[0], 1))  # 5 * 500 * 1，oof_test_skf[i]代表第i折交叉验证产生的模型对测试集预测结果
     
     
     for i, (train_index, test_index) in enumerate(kf.split(X_train)): # 交叉验证划分此时的训练集和验证集
+
         kf_X_train = X_train[train_index]  # 800 * 10 训练集
+
         kf_y_train = y_train[train_index]  # 1 * 800 训练集对应的输出
+
         kf_X_val = X_train[test_index]  # 200 * 10  验证集
 
         clf.fit(kf_X_train, kf_y_train)  # 当前模型进行训练
         
-        oof_train[test_index] = clf.predict(kf_X_val).reshape(-1, 1)  # 对当前验证集进行预测， 200 * 1  || 200    --->  200,1        
+        oof_train[test_index] = clf.predict(kf_X_val).reshape(-1, 1)  # 对当前验证集进行预测， 200 * 1  || 200    --->  200,1     
+           
         oof_test_skf[i, :] = clf.predict(X_test).reshape(-1, 1)  # 对测试集预测 oof_test_skf[i, :] : 500 * 1
 
     oof_test = oof_test_skf.mean(axis=0)  # 对每一则交叉验证的结果取平均
