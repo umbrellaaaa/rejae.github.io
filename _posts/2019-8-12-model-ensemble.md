@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      模型融合
+title:      模型融合及相关实验
 subtitle:   
 date:       2019-8-12
 author:     RJ
@@ -46,7 +46,7 @@ Stacking 与 bagging 和 boosting 主要存在两方面的差异。
 
 - 其次，stacking 学习用元模型组合基础模型，而bagging 和 boosting 则根据确定性算法组合弱学习器。
 
-staking的python实现：
+### staking的python实现：
 
 
 ```python
@@ -86,6 +86,7 @@ def get_oof(clf, X_train, y_train, X_test):
 
         kf_X_train = X_train[train_index]  # 800 * 10 训练集
 
+
         kf_y_train = y_train[train_index]  # 1 * 800 训练集对应的输出
 
         kf_X_val = X_train[test_index]  # 200 * 10  验证集
@@ -93,7 +94,7 @@ def get_oof(clf, X_train, y_train, X_test):
         clf.fit(kf_X_train, kf_y_train)  # 当前模型进行训练
         
         oof_train[test_index] = clf.predict(kf_X_val).reshape(-1, 1)  # 对当前验证集进行预测， 200 * 1  || 200    --->  200,1     
-           
+
         oof_test_skf[i, :] = clf.predict(X_test).reshape(-1, 1)  # 对测试集预测 oof_test_skf[i, :] : 500 * 1
 
     oof_test = oof_test_skf.mean(axis=0)  # 对每一则交叉验证的结果取平均
@@ -132,6 +133,8 @@ stacking代码总结，代码实现的重要流程分析：<br>
 运用KFold，在循环中用每次的（K-1）折训练clf, 用余下的1折进行predict,得到当前折的预测结果，重复K次得到与train训练集的所有预测结果。<br>
 在每次循环都会训练一个clf，用这个clf预测测试集，共得到K个测试集，取均值作为测试集的结果。
 最后，取上层的train,test预测结果，作为下一层的输入。<br>
+
+### 使用MNIST数据集实践stacking模型融合
 ## 后记
 
 参考：<br>
