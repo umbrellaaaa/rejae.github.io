@@ -128,7 +128,8 @@ def convert_single_example( max_seq_length,
   tokens_a = tokenizer.tokenize(text_a)
   tokens_b = None
   if text_b:
-    tokens_b = tokenizer.tokenize(text_b)# 这里主要是将中文分字
+    tokens_b = tokenizer.tokenize(text_b) 
+    #这里主要是将中文分字
   if tokens_b:
     # 如果有第二个句子，那么两个句子的总长度要小于 max_seq_length - 3
     # 因为要为句子补上[CLS], [SEP], [SEP]
