@@ -132,6 +132,7 @@ def convert_single_example( max_seq_length,
     #这里主要是将中文分字
   if tokens_b:
     # 如果有第二个句子，那么两个句子的总长度要小于 max_seq_length - 3
+
     # 因为要为句子补上[CLS], [SEP], [SEP]
     _truncate_seq_pair(tokens_a, tokens_b, max_seq_length - 3)
   else:
@@ -140,15 +141,24 @@ def convert_single_example( max_seq_length,
       tokens_a = tokens_a[0:(max_seq_length - 2)]
 
   # 转换成bert的输入，注意下面的type_ids 在源码中对应的是 segment_ids
+
   # (a) 两个句子:
+
   #  tokens:   [CLS] is this jack ##son ##ville ? [SEP] no it is not . [SEP]
+
   #  type_ids: 0     0  0    0    0     0       0 0     1  1  1  1   1 1
+
   # (b) 单个句子:
+
   #  tokens:   [CLS] the dog is hairy . [SEP]
+
   #  type_ids: 0     0   0   0  0     0 0
+
   #
   # 这里 "type_ids" 主要用于区分第一个第二个句子。
+
   # 第一个句子为0，第二个句子是1。在预训练的时候会添加到单词的的向量中，但这个不是必须的
+  
   # 因为[SEP] 已经区分了第一个句子和第二个句子。但type_ids 会让学习变的简单
 
   tokens = []
