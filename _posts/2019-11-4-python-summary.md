@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      python 个人摘要
+title:      python-summary
 subtitle:   summary
 date:       2019-11-4
 author:     RJ
