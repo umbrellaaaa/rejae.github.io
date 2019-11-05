@@ -559,7 +559,7 @@ def evaluate(sess, model, name, data, id_to_tag, logger):
                 sequence_lengths=lengths + 1)
             return tf.reduce_mean(-log_likelihood)
 ```
-loss_layer中，对num_tags这个维度进行+1，个人理解是初始状态y<sub>0</sub>
+loss_layer中，对num_tags这个维度进行+1，个人理解应该是初始状态y<sub>0</sub>
 
 
 
