@@ -453,3 +453,41 @@ response = requests.get(url, params)
 print(response.url)
 print(response.json())
 ```
+
+## 总结
+1. 模型加载：
+```python
+clf_path = 'lib/models/SentimentClassifier.pkl'
+with open(clf_path, 'rb') as f:
+    model.clf = pickle.load(f)
+
+vec_path = 'lib/models/TFIDFVectorizer.pkl'
+with open(vec_path, 'rb') as f:
+    model.vectorizer = pickle.load(f)
+```
+2. 输入数据的处理：
+```python
+        user_query = args['query']
+        uq_vectorized = model.vectorizer_transform(np.array([user_query]))
+```
+3. 调用模型方法：
+```python
+        prediction = model.predict(uq_vectorized)
+        pred_proba = model.predict_proba(uq_vectorized)
+```
+4. 放回相应结果：
+```python
+        # Output either 'Negative' or 'Positive' along with the score
+        if prediction == 0:
+            pred_text = 'Negative'
+        else:
+            pred_text = 'Positive'
+
+        # round the predict proba value and set to new variable
+        confidence = round(pred_proba[0], 3)
+
+        # create JSON object
+        output = {'prediction': pred_text, 'confidence': confidence}
+
+        return output
+```
