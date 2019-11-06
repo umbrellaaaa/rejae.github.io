@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      LSTM-CRF NER
+title:      机器学习模型的部署
 subtitle:   summary
 date:       2019-11-6
 author:     RJ
