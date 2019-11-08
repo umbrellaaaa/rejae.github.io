@@ -1,4 +1,4 @@
-# febonacci F0 =0, F1 = 1, Fn= F(n-1) + F(n-2)
+# 跳台阶：febonacci F0 =0, F1 = 1, Fn= F(n-1) + F(n-2)
 def febonacci(n):
 
     if n < 0:
@@ -24,3 +24,4 @@ def good_febonacci(n):
 print(good_febonacci(4)[0])
 print(good_febonacci(5)[0])
 print(good_febonacci(6)[0])
+
