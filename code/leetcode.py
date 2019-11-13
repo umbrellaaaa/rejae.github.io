@@ -54,3 +54,18 @@ class Solution(object):
             p = p.next
 
         return dumy_node.next
+
+# 3. max sub-string of no repeat charactor
+class Solution(object):
+
+    def length_of_longest_substring(self, s):
+        ans = 0
+        start = 0
+        d = {}
+        for i,v in enumerate(s):
+
+            if v in d:
+                start = max(start,d[v]+1)
+            d[v] = i
+            ans = max(ans, i-start+1)
+        return ans
