@@ -117,13 +117,16 @@ and divided by the total number of candidate ngrams
 
 修改后的unigram裁剪了单词the的重复次数，因为在reference中的最大次数也才2，所以避免了过度生成单词的句子还能获得较高分数的缺陷。
 
+# 改进多元精度
+P<sub>n</sub> = [sum<sub>target</sub>sum{<sub>n-gram</sub>}]/[sum<sub>reference</sub>sum{<sub>n-gram</sub>}]
 
 至此，简单的评价与改进的多元精度评价我们已经大概了解。改进的多元精度（modified n-gram precision）在文本段落翻译质量评估中的使用，只不过是把多个句子当成一个句子罢了。
 
 随后将多个改进的多元精度（modified n-gram precision）进行组合，再加上译句较短惩罚（Sentence brevity penalty ），就得到了最终的公式：<br>
-BLEU=BP∗exp(∑n=1~N  wn∗logpn)   <br>
-
+BLEU=BP∗exp(∑n=1~N  w<sub>n</sub>∗logp<sub>n</sub>)   <br>
+其中w<sub>n</sub>是不同n-gram的权重<br>
 BP={1  if…c>r  else  exp(1−r/c)}
+
 
 
 ## 后记

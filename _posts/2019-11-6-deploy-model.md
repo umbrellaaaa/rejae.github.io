@@ -475,7 +475,7 @@ with open(vec_path, 'rb') as f:
         prediction = model.predict(uq_vectorized)
         pred_proba = model.predict_proba(uq_vectorized)
 ```
-4. 放回相应结果：
+4. 返回相应结果：
 ```python
         # Output either 'Negative' or 'Positive' along with the score
         if prediction == 0:

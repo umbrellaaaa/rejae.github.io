@@ -15,8 +15,8 @@ tags:
 并在找到下一份大厂实习之前，我要一直一直刷题。<br>
 虽然可能会有很多诱惑，但是，做人一定要有自己的原则。
 
-<p id = "build"></p>
----
+## <p id = "build"></p>
+## ---
 
 ## 正文
 今天oppo的面试给我当头一棒，一切都还满意，就是写代码。<br>
@@ -172,15 +172,15 @@ def quick_sort_single(arr, start, end):
         mark = start
         i, j = start, end
 
-        while i < j:
-            for index in range(i + 1, end + 1):
-                if arr[index] < pivot:
-                    mark = mark + 1
 
-                    temp = arr[mark]
-                    arr[mark] = arr[index]
-                    arr[index] = temp
-            i = index
+        for index in range(i + 1, end + 1):
+            if arr[index] < pivot:
+                mark = mark + 1
+
+                temp = arr[mark]
+                arr[mark] = arr[index]
+                arr[index] = temp
+
         arr[start] = arr[mark]
         arr[mark] = pivot
         quick_sort_single(arr, start, mark - 1)
