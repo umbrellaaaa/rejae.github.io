@@ -565,8 +565,7 @@ gmp是由conv采取reduce_max生成:[batch_size, 256]
 https://github.com/rejae/text-classification-cnn-rnn
 
 
-## 后记
-本文是基于CNN，RNN的文本分类，后面会接着分析传统的LR,Bays,XGBoost传统文本分类，以及基于transformer的文本分类。
+
 
 
 ## 实验结果
@@ -884,3 +883,78 @@ CNN  Test Loss:   0.13, Test Acc:  96.06%---->>Test Loss:   0.13, Test Acc:  96.
 发现CNN Testing有所下降为0.93%，而RNN的提升也很明显为1.11%。个人思考应该是使用wiki_data预训练词向量对LSTM的前后记忆联系有较大的帮助，而CNN更只是滑动窗口似的进行卷积池化，语义联系不如RNN大，所以这个好处get不到。
 
 ## 为RNN加入attention机制
+原来代码只是利用了LSTM的最后一个time_step的输出[batch_size, hidden_dim]传给project_layer进行计算，这里通过_attention方法利用每个time_step的LSTM输出，进行加权计算：
+```python
+    def _attention(self, _outputs):
+        output_reshape = tf.reshape(_outputs, [-1, self.config.hidden_dim])
+        w = tf.Variable(tf.random_normal([self.config.hidden_dim], stddev=0.1))
+        w_reshape = tf.reshape(w, [-1, 1])
+        M = tf.matmul(output_reshape, w_reshape)
+        M_shape = tf.reshape(M, [-1, self.config.seq_length])
+        self.alpha = tf.nn.softmax(M_shape)
+
+        # 利用求得的alpha的值对H进行加权求和，用矩阵运算直接操作
+        r = tf.matmul(tf.transpose(_outputs, [0, 2, 1]), tf.reshape(self.alpha, [-1, self.config.seq_length, 1]))
+        sequeezeR = tf.squeeze(r)
+        sentenceRepren = tf.tanh(sequeezeR)
+
+        # 对Attention的输出可以做dropout处理
+        # output = tf.nn.dropout(sentenceRepren, self.keep_prob)
+
+        return tf.reshape(sentenceRepren, [-1, self.config.hidden_dim])
+```
+将返回的值替换last值传入projection_layer即可。
+
+
+
+
+
+
+
+
+## 后记
+测试tf.reshape的用法：
+```python
+# 相当于batch == 3， time_step=2,  hidden = 4
+import numpy as np
+a = np.array(
+[
+    [
+        [2,3,4,5],
+        [5,6,7,8]
+    ],
+    [
+        [1,2,3,4],
+        [4,5,6,7]
+    ],
+    [
+        [6,7,8,9],
+        [4,5,6,7]
+    ]
+])
+out:
+a = array([[[2, 3, 4, 5],
+        [5, 6, 7, 8]],
+
+       [[1, 2, 3, 4],
+        [4, 5, 6, 7]],
+
+       [[6, 7, 8, 9],
+        [4, 5, 6, 7]]])
+
+import tensorflow as tf
+
+op = tf.reshape(a,[-1,4])
+sess = tf.InteractiveSession()
+sess.run(op)
+
+out:
+array([[2, 3, 4, 5],
+       [5, 6, 7, 8],
+       [1, 2, 3, 4],
+       [4, 5, 6, 7],
+       [6, 7, 8, 9],
+       [4, 5, 6, 7]])
+```
+即，reshape是从内到外，先从括号最里面开始展开，文本分类中的张量[batch_size,time_step,hidden_size]在attention那一层中使用了reshape(H,[-1,hidden_size])
+本文是基于CNN，RNN的文本分类，后面会接着分析传统的LR,Bays,XGBoost传统文本分类，以及基于transformer的文本分类。
