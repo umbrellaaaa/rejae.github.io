@@ -576,14 +576,139 @@ def evaluate(sess, model, name, data, id_to_tag, logger):
 
 
 
+## 总结
 
+注意到在embedding_layer中，不仅使用了字嵌入jieba cut后的BIOS 其作为另一种嵌入特征表示，维度为20。具体通过jieba.cub切分句子成BIOS的形式，所有有0,1,2,3种label。实现如下：
+```python
+def get_seg_features(string):
+    """
+    Segment text with jieba
+    features are represented in bies format
+    s donates single word
+    """
+    seg_feature = []
 
+    for word in jieba.cut(string):
+        if len(word) == 1:
+            seg_feature.append(0)
+        else:
+            tmp = [2] * len(word)
+            tmp[0] = 1
+            tmp[-1] = 3
+            seg_feature.extend(tmp)
+    return seg_feature
+```
+加如的这种特征即是分块特征，即是NLP的四大基础任务（POS,CHUNKING,SRL,NER）中的chunking.
 
+把使用wiki_100.utf预训练文件和拼接分块特征的这种词嵌入方法单独抽取出来，以迁移到别的任务中：
 
+1. 首先定位到model中的embedding_layer():
+```python
+    def embedding_layer(self, char_inputs, seg_inputs, config, name=None):
+        """
+        :param char_inputs: one-hot encoding of sentence
+        :param seg_inputs: segmentation feature
+        :param config: wither use segmentation feature
+        :return: [1, num_steps, embedding size], 
+        """
 
+        embedding = []
+        with tf.variable_scope("char_embedding" if not name else name), tf.device('/cpu:0'):
+            self.char_lookup = tf.get_variable(
+                name="char_embedding",
+                shape=[self.num_chars, self.char_dim],
+                initializer=self.initializer)
+            embedding.append(tf.nn.embedding_lookup(self.char_lookup, char_inputs))
+            if config["seg_dim"]:
+                with tf.variable_scope("seg_embedding"), tf.device('/cpu:0'):
+                    self.seg_lookup = tf.get_variable(
+                        name="seg_embedding",
+                        shape=[self.num_segs, self.seg_dim],
+                        initializer=self.initializer)
+                    embedding.append(tf.nn.embedding_lookup(self.seg_lookup, seg_inputs))
+            embed = tf.concat(embedding, axis=-1)
+        return embed
+```
+发现使用了tf.nn.embedding_lookup+initializer初始化了char_embedding和segs_embedding, 其中initializer是通过：
+```
+from tensorflow.contrib.layers.python.layers import initializers
+initializers.xavier_initializer()
+```
+2. 在main.py中，create_model时传入了load_word2vec方法：
+```python
+model = create_model(sess, Model, FLAGS.ckpt_path, load_word2vec, config, id_to_char, logger)
 
+def create_model(session, Model_class, path, load_vec, config, id_to_char, logger):
+    # create model, reuse parameters if exists
+    model = Model_class(config)
 
+    ckpt = tf.train.get_checkpoint_state(path)
+    if ckpt and tf.train.checkpoint_exists(ckpt.model_checkpoint_path):
+        logger.info("Reading model parameters from %s" % ckpt.model_checkpoint_path)
+        model.saver.restore(session, ckpt.model_checkpoint_path)
+    else:
+        logger.info("Created model with fresh parameters.")
+        session.run(tf.global_variables_initializer())
+        if config["pre_emb"]:
+            emb_weights = session.run(model.char_lookup.read_value())
+            emb_weights = load_vec(config["emb_file"],id_to_char, config["char_dim"], emb_weights)
+            session.run(model.char_lookup.assign(emb_weights))
+            logger.info("Load pre-trained embedding.")
+    return model
+```
+**重点：**在模型创建的时候，model = Model_class(config)，其embedding_layer方法就已经调用，已经初始化了lookup_table,所以接下来在判断config["pre_emb"]=True以后，再读出已经初始化的lookup_table传入load_vec中去更新。最后使用session.run(model.char_lookup.assign(emb_weights))对原来的char_lookup_table作覆盖。
 
+查看word2vec方法如下：
+```python
+def load_word2vec(emb_path, id_to_word, word_dim, old_weights):
+    """
+    Load word embedding from pre-trained file
+    embedding size must match
+    """
+    new_weights = old_weights
+    print('Loading pretrained embeddings from {}...'.format(emb_path))
+    pre_trained = {}
+    emb_invalid = 0
+    for i, line in enumerate(codecs.open(emb_path, 'r', 'utf-8')):
+        line = line.rstrip().split() ##取出pretrain_file的一行
+        if len(line) == word_dim + 1: ##char+嵌入维度
+            pre_trained[line[0]] = np.array(
+                [float(x) for x in line[1:]]
+            ).astype(np.float32) ## 形成pre_trained字典，格式为'char':array([100维])
+        else:
+            emb_invalid += 1
+    if emb_invalid > 0:
+        print('WARNING: %i invalid lines' % emb_invalid)
+    c_found = 0
+    c_lower = 0
+    c_zeros = 0
+    n_words = len(id_to_word)
+    # Lookup table initialization
+    for i in range(n_words):
+        word = id_to_word[i]
+        if word in pre_trained:
+            new_weights[i] = pre_trained[word]
+            c_found += 1
+        elif word.lower() in pre_trained:
+            new_weights[i] = pre_trained[word.lower()]
+            c_lower += 1
+        elif re.sub('\d', '0', word.lower()) in pre_trained:
+            new_weights[i] = pre_trained[
+                re.sub('\d', '0', word.lower())
+            ]
+            c_zeros += 1
+    print('Loaded %i pretrained embeddings.' % len(pre_trained))
+    print('%i / %i (%.4f%%) words have been initialized with '
+          'pretrained embeddings.' % (
+              c_found + c_lower + c_zeros, n_words,
+              100. * (c_found + c_lower + c_zeros) / n_words)
+          )
+    print('%i found directly, %i after lowercasing, '
+          '%i after lowercasing + zero.' % (
+              c_found, c_lower, c_zeros
+          ))
+    return new_weights
+```
 
 
 

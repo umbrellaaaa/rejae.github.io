@@ -569,7 +569,318 @@ https://github.com/rejae/text-classification-cnn-rnn
 本文是基于CNN，RNN的文本分类，后面会接着分析传统的LR,Bays,XGBoost传统文本分类，以及基于transformer的文本分类。
 
 
+## 实验结果
+```
+TextRNN train
+Training and evaluating...
+Epoch: 1
+Iter:      0, Train Loss:    2.3, Train Acc:   9.38%, Val Loss:    2.3, Val Acc:  10.78%, Time: 0:00:14 *
+Iter:    100, Train Loss:   0.92, Train Acc:  68.75%, Val Loss:    1.1, Val Acc:  63.58%, Time: 0:01:30 *
+Iter:    200, Train Loss:   0.57, Train Acc:  83.59%, Val Loss:   0.77, Val Acc:  76.48%, Time: 0:02:45 *
+Iter:    300, Train Loss:   0.39, Train Acc:  86.72%, Val Loss:   0.77, Val Acc:  79.44%, Time: 0:04:00 *
+Epoch: 2
+Iter:    400, Train Loss:   0.26, Train Acc:  93.75%, Val Loss:   0.63, Val Acc:  82.34%, Time: 0:05:16 *
+Iter:    500, Train Loss:    0.3, Train Acc:  91.41%, Val Loss:   0.64, Val Acc:  82.12%, Time: 0:06:31
+Iter:    600, Train Loss:   0.43, Train Acc:  88.28%, Val Loss:   0.55, Val Acc:  83.50%, Time: 0:07:45 *
+Iter:    700, Train Loss:   0.21, Train Acc:  94.53%, Val Loss:   0.54, Val Acc:  84.32%, Time: 0:09:00 *
+Epoch: 3
+Iter:    800, Train Loss:    0.2, Train Acc:  92.97%, Val Loss:   0.49, Val Acc:  86.74%, Time: 0:10:15 *
+Iter:    900, Train Loss:   0.14, Train Acc:  93.75%, Val Loss:   0.46, Val Acc:  88.32%, Time: 0:11:29 *
+Iter:   1000, Train Loss:   0.16, Train Acc:  97.66%, Val Loss:   0.42, Val Acc:  88.34%, Time: 0:12:44 *
+Iter:   1100, Train Loss:   0.19, Train Acc:  93.75%, Val Loss:   0.41, Val Acc:  89.12%, Time: 0:14:00 *
+Epoch: 4
+Iter:   1200, Train Loss:   0.13, Train Acc:  97.66%, Val Loss:   0.38, Val Acc:  90.56%, Time: 0:15:15 *
+Iter:   1300, Train Loss:  0.051, Train Acc:  97.66%, Val Loss:   0.37, Val Acc:  89.70%, Time: 0:16:29
+Iter:   1400, Train Loss:  0.045, Train Acc: 100.00%, Val Loss:   0.34, Val Acc:  91.04%, Time: 0:17:44 *
+Iter:   1500, Train Loss:   0.19, Train Acc:  95.31%, Val Loss:   0.36, Val Acc:  90.16%, Time: 0:18:58
+Epoch: 5
+Iter:   1600, Train Loss:   0.12, Train Acc:  96.09%, Val Loss:   0.35, Val Acc:  90.86%, Time: 0:20:14
+Iter:   1700, Train Loss:   0.15, Train Acc:  95.31%, Val Loss:   0.32, Val Acc:  91.86%, Time: 0:21:29 *
+Iter:   1800, Train Loss:   0.12, Train Acc:  96.09%, Val Loss:   0.38, Val Acc:  90.30%, Time: 0:22:44
+Iter:   1900, Train Loss:  0.055, Train Acc:  97.66%, Val Loss:   0.34, Val Acc:  91.32%, Time: 0:24:00
+Epoch: 6
+Iter:   2000, Train Loss:  0.045, Train Acc:  98.44%, Val Loss:   0.45, Val Acc:  88.80%, Time: 0:25:15
+Iter:   2100, Train Loss:  0.056, Train Acc:  98.44%, Val Loss:   0.38, Val Acc:  90.14%, Time: 0:26:30
+Iter:   2200, Train Loss:  0.025, Train Acc: 100.00%, Val Loss:   0.37, Val Acc:  90.98%, Time: 0:27:44
+Iter:   2300, Train Loss:  0.094, Train Acc:  96.88%, Val Loss:   0.41, Val Acc:  89.30%, Time: 0:28:59
+Epoch: 7
+Iter:   2400, Train Loss:  0.028, Train Acc:  99.22%, Val Loss:   0.35, Val Acc:  91.50%, Time: 0:30:13
+Iter:   2500, Train Loss:  0.055, Train Acc:  99.22%, Val Loss:   0.33, Val Acc:  91.54%, Time: 0:31:28
+Iter:   2600, Train Loss:  0.073, Train Acc:  97.66%, Val Loss:   0.35, Val Acc:  91.46%, Time: 0:32:42
+Iter:   2700, Train Loss:   0.13, Train Acc:  96.09%, Val Loss:   0.32, Val Acc:  91.62%, Time: 0:33:57
+No optimization for a long time, auto-stopping...
+
+Test
+Testing...
+Test Loss:    0.2, Test Acc:  94.62%
+Precision, Recall and F1-Score...
+              precision    recall  f1-score   support
+
+          体育       0.98      0.98      0.98      1000
+          财经       0.93      0.98      0.96      1000
+          房产       1.00      0.99      1.00      1000
+          家居       0.96      0.80      0.87      1000
+          教育       0.92      0.92      0.92      1000
+          科技       0.94      0.96      0.95      1000
+          时尚       0.91      0.97      0.94      1000
+          时政       0.92      0.94      0.93      1000
+          游戏       0.96      0.96      0.96      1000
+          娱乐       0.95      0.95      0.95      1000
+
+    accuracy                           0.95     10000
+   macro avg       0.95      0.95      0.95     10000
+weighted avg       0.95      0.95      0.95     10000
+
+Confusion Matrix...
+[[983   0   0   0   2   0   0   0   1  14]
+ [  0 983   1   0   4   1   1  10   0   0]
+ [  0   1 995   2   1   0   0   1   0   0]
+ [  0  29   0 795  32  24  54  52   7   7]
+ [ 15  18   0   4 919  16   2   8   6  12]
+ [  0   1   0   8   7 964   3   2  14   1]
+ [  0   1   0  12   5   1 966   2   5   8]
+ [  0  18   0   2  23  11   0 942   3   1]
+ [  4   2   0   0   5   6  19   0 960   4]
+ [  3   1   1   8   5   5  13   4   5 955]]
+Time usage: 0:00:53
+
+```
+
+```
+Training and evaluating...
+Text_CNN train
+Epoch: 1
+Iter:      0, Train Loss:    2.3, Train Acc:  15.62%, Val Loss:    2.3, Val Acc:  10.40%, Time: 0:00:04 *
+Iter:    100, Train Loss:   0.59, Train Acc:  82.81%, Val Loss:    1.1, Val Acc:  69.80%, Time: 0:00:07 *
+Iter:    200, Train Loss:   0.22, Train Acc:  93.75%, Val Loss:   0.58, Val Acc:  81.86%, Time: 0:00:09 *
+Iter:    300, Train Loss:   0.22, Train Acc:  90.62%, Val Loss:   0.39, Val Acc:  89.04%, Time: 0:00:12 *
+Iter:    400, Train Loss:   0.19, Train Acc:  95.31%, Val Loss:   0.33, Val Acc:  90.94%, Time: 0:00:14 *
+Iter:    500, Train Loss:    0.1, Train Acc:  96.88%, Val Loss:    0.3, Val Acc:  91.62%, Time: 0:00:16 *
+Iter:    600, Train Loss:   0.39, Train Acc:  90.62%, Val Loss:   0.35, Val Acc:  90.12%, Time: 0:00:18
+Iter:    700, Train Loss:  0.068, Train Acc:  98.44%, Val Loss:   0.27, Val Acc:  92.84%, Time: 0:00:20 *
+Epoch: 2
+Iter:    800, Train Loss:   0.18, Train Acc:  90.62%, Val Loss:   0.23, Val Acc:  92.92%, Time: 0:00:22 *
+Iter:    900, Train Loss:   0.23, Train Acc:  90.62%, Val Loss:   0.22, Val Acc:  93.30%, Time: 0:00:24 *
+Iter:   1000, Train Loss:   0.11, Train Acc:  98.44%, Val Loss:   0.27, Val Acc:  92.04%, Time: 0:00:26
+Iter:   1100, Train Loss:   0.14, Train Acc:  95.31%, Val Loss:   0.23, Val Acc:  92.90%, Time: 0:00:28
+Iter:   1200, Train Loss:   0.15, Train Acc:  95.31%, Val Loss:    0.2, Val Acc:  93.96%, Time: 0:00:30 *
+Iter:   1300, Train Loss:  0.083, Train Acc:  96.88%, Val Loss:    0.2, Val Acc:  93.82%, Time: 0:00:32
+Iter:   1400, Train Loss:   0.19, Train Acc:  93.75%, Val Loss:   0.24, Val Acc:  93.26%, Time: 0:00:34
+Iter:   1500, Train Loss:  0.046, Train Acc:  98.44%, Val Loss:    0.2, Val Acc:  94.16%, Time: 0:00:36 *
+Epoch: 3
+Iter:   1600, Train Loss:  0.034, Train Acc:  98.44%, Val Loss:    0.2, Val Acc:  94.14%, Time: 0:00:38
+Iter:   1700, Train Loss:  0.044, Train Acc:  98.44%, Val Loss:   0.16, Val Acc:  95.50%, Time: 0:00:40 *
+Iter:   1800, Train Loss:  0.025, Train Acc: 100.00%, Val Loss:   0.17, Val Acc:  94.94%, Time: 0:00:42
+Iter:   1900, Train Loss:  0.093, Train Acc:  96.88%, Val Loss:   0.19, Val Acc:  94.26%, Time: 0:00:44
+Iter:   2000, Train Loss:  0.089, Train Acc:  98.44%, Val Loss:   0.16, Val Acc:  95.70%, Time: 0:00:46 *
+Iter:   2100, Train Loss:  0.063, Train Acc:  95.31%, Val Loss:   0.16, Val Acc:  95.08%, Time: 0:00:48
+Iter:   2200, Train Loss:  0.046, Train Acc:  98.44%, Val Loss:   0.21, Val Acc:  94.18%, Time: 0:00:50
+Iter:   2300, Train Loss: 0.0093, Train Acc: 100.00%, Val Loss:    0.2, Val Acc:  94.32%, Time: 0:00:52
+Epoch: 4
+Iter:   2400, Train Loss:  0.016, Train Acc: 100.00%, Val Loss:    0.2, Val Acc:  94.20%, Time: 0:00:54
+Iter:   2500, Train Loss:  0.014, Train Acc: 100.00%, Val Loss:   0.21, Val Acc:  94.54%, Time: 0:00:56
+Iter:   2600, Train Loss: 0.0055, Train Acc: 100.00%, Val Loss:   0.18, Val Acc:  94.86%, Time: 0:00:58
+Iter:   2700, Train Loss:   0.14, Train Acc:  95.31%, Val Loss:   0.21, Val Acc:  94.28%, Time: 0:01:00
+Iter:   2800, Train Loss: 0.0078, Train Acc: 100.00%, Val Loss:   0.19, Val Acc:  94.72%, Time: 0:01:02
+Iter:   2900, Train Loss:  0.014, Train Acc: 100.00%, Val Loss:   0.19, Val Acc:  95.00%, Time: 0:01:04
+Iter:   3000, Train Loss: 0.0038, Train Acc: 100.00%, Val Loss:   0.22, Val Acc:  94.08%, Time: 0:01:06
+No optimization for a long time, auto-stopping...
+
+Test:
+Testing...
+Test Loss:   0.13, Test Acc:  96.06%
+Precision, Recall and F1-Score...
+              precision    recall  f1-score   support
+
+          体育       0.99      0.99      0.99      1000
+          财经       0.93      0.99      0.96      1000
+          房产       1.00      0.99      1.00      1000
+          家居       0.99      0.84      0.91      1000
+          教育       0.92      0.94      0.93      1000
+          科技       0.94      0.99      0.96      1000
+          时尚       0.97      0.97      0.97      1000
+          时政       0.93      0.95      0.94      1000
+          游戏       0.99      0.96      0.98      1000
+          娱乐       0.95      0.98      0.97      1000
+
+    accuracy                           0.96     10000
+   macro avg       0.96      0.96      0.96     10000
+weighted avg       0.96      0.96      0.96     10000
+
+Confusion Matrix...
+[[991   0   0   0   3   2   0   3   0   1]
+ [  0 992   0   0   1   1   0   6   0   0]
+ [  0   2 994   0   2   0   0   0   0   2]
+ [  1  42   3 836  22  28  18  37   1  12]
+ [  1   9   0   1 942  14   7  15   1  10]
+ [  0   2   0   1   3 988   2   2   1   1]
+ [  1   2   0   1   8   4 966   1   3  14]
+ [  0  16   0   1  27   6   0 948   1   1]
+ [  1   6   0   0  10   3   4   1 964  11]
+ [  1   1   0   2   5   3   2   1   0 985]]
+Time usage: 0:00:07
+
+```
+对比结果发现CNN的效果居然大于RNN的效果，考虑embedding_size=64太小，所以我打算增大到100进行实验：<br>
+CNN训练后的测试结果：
+```
+Testing...
+Test Loss:   0.13, Test Acc:  96.84%
+Precision, Recall and F1-Score...
+              precision    recall  f1-score   support
+
+          体育       0.99      0.99      0.99      1000
+          财经       0.96      0.99      0.97      1000
+          房产       1.00      1.00      1.00      1000
+          家居       0.99      0.90      0.94      1000
+          教育       0.93      0.94      0.93      1000
+          科技       0.95      0.98      0.97      1000
+          时尚       0.97      0.97      0.97      1000
+          时政       0.95      0.96      0.95      1000
+          游戏       0.97      0.98      0.98      1000
+          娱乐       0.97      0.98      0.98      1000
+
+    accuracy                           0.97     10000
+   macro avg       0.97      0.97      0.97     10000
+weighted avg       0.97      0.97      0.97     10000
+
+Confusion Matrix...
+[[993   0   0   0   3   1   0   0   2   1]
+ [  0 989   0   0   5   2   0   4   0   0]
+ [  0   1 998   0   1   0   0   0   0   0]
+ [  0  20   2 898  20  20  10  22   3   5]
+ [  1   2   0   4 938  15   6  21   6   7]
+ [  0   1   0   2   3 982   1   2   8   1]
+ [  1   1   0   3   7   3 970   1   3  11]
+ [  1  13   0   1  20   8   0 956   1   0]
+ [  1   1   0   0   8   1   6   0 982   1]
+ [  1   1   0   3   7   3   4   0   3 978]]
+Time usage: 0:00:07
+
+```
+测试精度从96.06%提高到了96.84%。
+```
+RNN Test
+Test Loss:   0.24, Test Acc:  94.63%
+Precision, Recall and F1-Score...
+              precision    recall  f1-score   support
+
+          体育       0.99      0.99      0.99      1000
+          财经       0.93      0.98      0.96      1000
+          房产       0.99      0.99      0.99      1000
+          家居       0.99      0.77      0.86      1000
+          教育       0.93      0.89      0.91      1000
+          科技       0.96      0.97      0.96      1000
+          时尚       0.89      0.97      0.93      1000
+          时政       0.89      0.95      0.92      1000
+          游戏       0.95      0.97      0.96      1000
+          娱乐       0.97      0.96      0.97      1000
+
+    accuracy                           0.95     10000
+   macro avg       0.95      0.95      0.95     10000
+weighted avg       0.95      0.95      0.95     10000
+
+Confusion Matrix...
+[[992   0   0   0   4   1   0   0   3   0]
+ [  0 983   2   0   2   1   0  12   0   0]
+ [  0   2 995   1   1   0   1   0   0   0]
+ [  5  32  11 765  32  10  87  46   7   5]
+ [  1   6   0   1 892  18   8  55  13   6]
+ [  0   3   0   2   2 974   4   1  14   0]
+ [  0   0   0   5   6   2 974   1   5   7]
+ [  0  19   0   0  16   7   0 952   4   2]
+ [  0   1   0   1   2   2  13   3 972   6]
+ [  3   8   1   1   4   4  10   0   5 964]]
+Time usage: 0:00:54
+
+```
+RNN测试从Test Loss:    0.2, Test Acc:  94.62%---->>Test Loss:   0.24, Test Acc:  94.63%
+对比CNN  Test Loss:   0.13, Test Acc:  96.06%---->>Test Loss:   0.13, Test Acc:  96.84%
+效果提升了近1个百分点，而RNN几乎没有变化，查看代码，发现作者的CNN设置的dropout=0.5而rnn的却是0.8，可能是为了方便RNN快速训练吧，所以我将embedding_size从64->100并没有什么效果，而且训练到10个epoch的时候结束的，并没有早停，查看训练结果，发现train的acc都快逼近100%了，而valid只在90%徘徊，估计是过拟合了吧。于是我先调整dropout=0.5试试。
+设置dropout=0.5的测试结果为：Test Loss:   0.19, Test Acc:  95.29%，对比Test Acc:  94.63%，嗯，有了0.66%的提升。
+## 使用word2vec100维词嵌入测试模型：
+使用wiki_100.utf词向量，进行训练，通过如下方法接入模型：
+1. 将model中的embedding设为类变量以便访问：self.embedding, 在model中添加emb_file路径, use_pretrained的flag
+2. 在run_rnn中添加load_word2vec方法如下：
+```python
+def load_word2vec(emb_path, id_to_word, word_dim, old_weights):
+    """
+    Load word embedding from pre-trained file
+    embedding size must match
+    """
+    new_weights = old_weights
+    print('Loading pretrained embeddings from {}...'.format(emb_path))
+    pre_trained = {}
+    emb_invalid = 0
+    for i, line in enumerate(codecs.open(emb_path, 'r', 'utf-8')):
+        line = line.rstrip().split() ##取出pretrain_file的一行
+        if len(line) == word_dim + 1: ##char+嵌入维度
+            pre_trained[line[0]] = np.array(
+                [float(x) for x in line[1:]]
+            ).astype(np.float32) ## 形成pre_trained字典，格式为'char':array([100维])
+        else:
+            emb_invalid += 1
+    if emb_invalid > 0:
+        print('WARNING: %i invalid lines' % emb_invalid)
+    c_found = 0
+    c_lower = 0
+    c_zeros = 0
+    n_words = len(id_to_word)
+    # Lookup table initialization
+    for i in range(n_words):  # KeyError: 17 是' '
+        print(i)
+        print(id_to_word[i])
+        word = id_to_word[i]
+        if word in pre_trained:
+            new_weights[i] = pre_trained[word]
+            c_found += 1
+        elif word.lower() in pre_trained:
+            new_weights[i] = pre_trained[word.lower()]
+            c_lower += 1
+        elif re.sub('\d', '0', word.lower()) in pre_trained:
+            new_weights[i] = pre_trained[
+                re.sub('\d', '0', word.lower())
+            ]
+            c_zeros += 1
+    print('Loaded %i pretrained embeddings.' % len(pre_trained))
+    print('%i / %i (%.4f%%) words have been initialized with '
+          'pretrained embeddings.' % (
+              c_found + c_lower + c_zeros, n_words,
+              100. * (c_found + c_lower + c_zeros) / n_words)
+          )
+    print('%i found directly, %i after lowercasing, '
+          '%i after lowercasing + zero.' % (
+              c_found, c_lower, c_zeros
+          ))
+    return new_weights
+```
+在模型session init之后，加入：
+```python
+
+    # use pre_trained
+    if config.use_pre_trained:
+        id_to_char = {value : key for key, value in word_to_id.items()}
+        emb_weights = session.run(model.embedding.read_value())
+        emb_weights = load_word2vec(config.emb_file, id_to_char, config.embedding_dim, emb_weights)
+        session.run(model.embedding.assign(emb_weights))
+```
+即可将预训练词向量传入模型。替换预训练向量，测试结果如下：
+
+CNN Testing...
+Test Loss:   0.14, Test Acc:  95.91%
+
+LSTM Testing...
+Test Loss:   0.15, Test Acc:  95.72%
 
 
+对比之前的结果：
+<br>
+```
+embedding_size=64 --->>  100
+RNN  Test Loss:    0.2, Test Acc:  94.62%---->>Test Loss:   0.24, Test Acc:  94.63%
+CNN  Test Loss:   0.13, Test Acc:  96.06%---->>Test Loss:   0.13, Test Acc:  96.84%
+```
+<br>
+发现CNN Testing有所下降为0.93%，而RNN的提升也很明显为1.11%。个人思考应该是使用wiki_data预训练词向量对LSTM的前后记忆联系有较大的帮助，而CNN更只是滑动窗口似的进行卷积池化，语义联系不如RNN大，所以这个好处get不到。
 
-
+## 为RNN加入attention机制
