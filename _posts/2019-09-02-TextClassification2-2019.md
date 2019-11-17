@@ -47,9 +47,9 @@ train_df.head()
 4 	体育 	揭秘谢亚龙被带走：总局电话骗局 复制南杨轨迹体坛周报特约记者张锐北京报道  谢亚龙已经被公安...
 ----------------------------------------------------------------------
 
-train_df=pd.read_table(val_dir,header=None)
-print(train_df.shape)
-train_df.head()
+val_df=pd.read_table(val_dir,header=None)
+print(val_df.shape)
+val_df.head()
 
 (5000, 2)
 
@@ -60,9 +60,9 @@ train_df.head()
 3 	体育 	韩国国奥20人名单：朴周永领衔 两世界杯国脚入选新浪体育讯据韩联社首尔9月17日电 韩国国奥...
 4 	体育 	天才中锋崇拜王治郅 周琦：球员最终是靠实力说话2月14日从土耳其男篮邀请赛回到北京之后，周琦...
 ----------------------------------------------------------------------
-train_df=pd.read_table(test_dir,header=None)
-print(train_df.shape)
-train_df.head()
+test_df=pd.read_table(test_dir,header=None)
+print(test_df.shape)
+test_df.head()
 
 (10000, 2)
 
@@ -477,7 +477,7 @@ print_per_batch, save_per_batch<br>
 input_x, input_y, keep_prob三个待输入的placeholder<br>
 在cpu上执行：embedding_lookup<br>
 **在cnn的name_scope中**执行conv1d, 并且最大池化 reduce_max<br>
-**在score的name_scope中**，将cnn的最大池化输出接入全连接层tf.layers.dense， 经过dropout, relu后再全连接输出类别层，此时得到的是类别数量大小的一个数组，其中dense的返回说明是： <br>
+**在score的name_scope中**将cnn的最大池化输出接入全连接层tf.layers.dense, 经过dropout, relu后再全连接输出类别层，此时得到的是类别数量大小的一个数组，其中dense的返回说明是： <br>
   Returns:
     Output tensor the same shape as `inputs` except the last dimension is of size `units`. 即输出张量和输入张量形状相同，除了最后一维度的大小是 units，类比一下矩阵相乘就好理解了。<br>
 接下来将输出层的值进行softmax, 随后取argmax，得到预测的类别。
@@ -569,6 +569,7 @@ https://github.com/rejae/text-classification-cnn-rnn
 
 
 ## 实验结果
+###  64维自训练cnn  VS  lstm
 ```
 TextRNN train
 Training and evaluating...
@@ -720,6 +721,7 @@ Confusion Matrix...
 Time usage: 0:00:07
 
 ```
+
 对比结果发现CNN的效果居然大于RNN的效果，考虑embedding_size=64太小，所以我打算增大到100进行实验：<br>
 CNN训练后的测试结果：
 ```
@@ -797,6 +799,7 @@ RNN测试从Test Loss:    0.2, Test Acc:  94.62%---->>Test Loss:   0.24, Test Ac
 对比CNN  Test Loss:   0.13, Test Acc:  96.06%---->>Test Loss:   0.13, Test Acc:  96.84%
 效果提升了近1个百分点，而RNN几乎没有变化，查看代码，发现作者的CNN设置的dropout=0.5而rnn的却是0.8，可能是为了方便RNN快速训练吧，所以我将embedding_size从64->100并没有什么效果，而且训练到10个epoch的时候结束的，并没有早停，查看训练结果，发现train的acc都快逼近100%了，而valid只在90%徘徊，估计是过拟合了吧。于是我先调整dropout=0.5试试。
 设置dropout=0.5的测试结果为：Test Loss:   0.19, Test Acc:  95.29%，对比Test Acc:  94.63%，嗯，有了0.66%的提升。
+
 ## 使用word2vec100维词嵌入测试模型：
 使用wiki_100.utf词向量，进行训练，通过如下方法接入模型：
 1. 将model中的embedding设为类变量以便访问：self.embedding, 在model中添加emb_file路径, use_pretrained的flag
@@ -903,16 +906,60 @@ CNN  Test Loss:   0.13, Test Acc:  96.06%---->>Test Loss:   0.13, Test Acc:  96.
 
         return tf.reshape(sentenceRepren, [-1, self.config.hidden_dim])
 ```
-将返回的值替换last值传入projection_layer即可。
+测试结果
+```
+Testing...   双层LSTM 256   128
+Test Loss:   0.21, Test Acc:  94.28%
+
+Testing...   双层LSTM 256   128  +  attention
+Test Loss:   0.16, Test Acc:  96.18%
+```
+提升效果还不错。
+
+## 单向LSTM+attention  VS  双向LSTM+attention
+双向LSTM模型
+```
+    # 定义两层双向LSTM的模型结构
+    with tf.name_scope("Bi-LSTM"):
+        for idx, hidden_size in enumerate(self.config["hidden_sizes"]):
+            with tf.name_scope("Bi-LSTM" + str(idx)):
+                # 定义前向LSTM结构
+                lstm_fw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                    tf.nn.rnn_cell.LSTMCell(num_units=hidden_size, state_is_tuple=True),
+                    output_keep_prob=self.keep_prob)
+                # 定义反向LSTM结构
+                lstm_bw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                    tf.nn.rnn_cell.LSTMCell(num_units=hidden_size, state_is_tuple=True),
+                    output_keep_prob=self.keep_prob)
+
+                # 采用动态rnn，可以动态的输入序列的长度，若没有输入，则取序列的全长
+                # outputs是一个元祖(output_fw, output_bw)，其中两个元素的维度都是[batch_size, max_time, hidden_size],
+                # fw和bw的hidden_size一样
+                # self.current_state 是最终的状态，二元组(state_fw, state_bw)，state_fw=[batch_size, s]，s是一个元祖(h, c)
+                outputs, current_state = tf.nn.bidirectional_dynamic_rnn(lstm_fw_cell, lstm_bw_cell,
+                                                                            embedded_words, dtype=tf.float32,
+                                                                            scope="bi-lstm" + str(idx))
+
+                # 对outputs中的fw和bw的结果拼接 [batch_size, time_step, hidden_size * 2] 再送入下一层
+                embedded_words = tf.concat(outputs, 2)
+
+# 将最后一层Bi-LSTM输出的结果分割成前向和后向的输出
+outputs = tf.split(embedded_words, 2, -1)
+
+# 在Bi-LSTM+Attention的论文中，将前向和后向的输出相加
+with tf.name_scope("Attention"):
+    H = outputs[0] + outputs[1]
+
+    # 得到Attention的输出
+    output = self._attention(H)
+    output_size = self.config["hidden_sizes"][-1]
+
+```
 
 
 
+## 后记  1
 
-
-
-
-
-## 后记
 测试tf.reshape的用法：
 ```python
 # 相当于batch == 3， time_step=2,  hidden = 4
@@ -958,3 +1005,77 @@ array([[2, 3, 4, 5],
 ```
 即，reshape是从内到外，先从括号最里面开始展开，文本分类中的张量[batch_size,time_step,hidden_size]在attention那一层中使用了reshape(H,[-1,hidden_size])
 本文是基于CNN，RNN的文本分类，后面会接着分析传统的LR,Bays,XGBoost传统文本分类，以及基于transformer的文本分类。
+
+## 后记  2
+- batch数据生成,使用np.random.permutation取得随机index得到shuffle数据。
+注意到这个函数是个生成器，每次yield一批数据。
+```python
+def batch_iter(x, y, batch_size=64):
+    """生成批次数据"""
+    data_len = len(x)
+    num_batch = int((data_len - 1) / batch_size) + 1
+
+    indices = np.random.permutation(np.arange(data_len))
+    x_shuffle = x[indices]
+    y_shuffle = y[indices]
+
+    for i in range(num_batch):
+        start_id = i * batch_size
+        end_id = min((i + 1) * batch_size, data_len)
+        yield x_shuffle[start_id:end_id], y_shuffle[start_id:end_id]
+```
+
+- 训练日志、可视化参数与模型提前终止
+
+```python
+    print('Training and evaluating...')
+    start_time = time.time()
+    total_batch = 0  # 总批次
+    best_acc_val = 0.0  # 最佳验证集准确率
+    last_improved = 0  # 记录上一次提升批次
+    require_improvement = 1000  # 如果超过1000轮未提升，提前结束训练
+
+    flag = False
+    for epoch in range(config.num_epochs):
+        print('Epoch:', epoch + 1)
+        batch_train = batch_iter(x_train, y_train, config.batch_size)
+        for x_batch, y_batch in batch_train:
+            feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob)
+
+            if total_batch % config.save_per_batch == 0:
+                # 每多少轮次将训练结果写入tensorboard scalar
+                s = session.run(merged_summary, feed_dict=feed_dict)
+                writer.add_summary(s, total_batch)
+
+            if total_batch % config.print_per_batch == 0:
+                # 每多少轮次输出在训练集和验证集上的性能
+                feed_dict[model.keep_prob] = 1.0
+                loss_train, acc_train = session.run([model.loss, model.acc], feed_dict=feed_dict)
+                loss_val, acc_val = evaluate(session, x_val, y_val)  # todo
+
+                if acc_val > best_acc_val:
+                    # 保存最好结果
+                    best_acc_val = acc_val
+                    last_improved = total_batch
+                    saver.save(sess=session, save_path=save_path)
+                    improved_str = '*'
+                else:
+                    improved_str = ''
+
+                time_dif = get_time_dif(start_time)
+                msg = 'Iter: {0:>6}, Train Loss: {1:>6.2}, Train Acc: {2:>7.2%},' \
+                      + ' Val Loss: {3:>6.2}, Val Acc: {4:>7.2%}, Time: {5} {6}'
+                print(msg.format(total_batch, loss_train, acc_train, loss_val, acc_val, time_dif, improved_str))
+
+            feed_dict[model.keep_prob] = config.dropout_keep_prob
+            session.run(model.optim, feed_dict=feed_dict)  # 运行优化
+            total_batch += 1
+
+            if total_batch - last_improved > require_improvement:
+                # 验证集正确率长期不提升，提前结束训练
+                print("No optimization for a long time, auto-stopping...")
+                flag = True
+                break  # 跳出循环
+        if flag:  # 同上
+            break
+```
