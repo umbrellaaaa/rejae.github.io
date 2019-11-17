@@ -561,92 +561,56 @@ input: [batch_size, seq_len, embedding_size]<br>
 conv:[batch_size, 600-5+1, 256]，其中600-5+1=596是seq_len用尺寸为5的卷积核卷积后的结果，256是一共256个卷积核。<br>
 gmp是由conv采取reduce_max生成:[batch_size, 256]
 
-##参考内容
-https://github.com/rejae/text-classification-cnn-rnn
 
 
 
 
 
-## 实验结果
-###  64维自训练cnn  VS  lstm
+## 实验
+1. 实验1 采用原始参数训练，几个关键参数：
+    - GRU 64维自训练词向量、单向、单层
+    - GRU 64维自训练词向量、单向、双层[128,128]（原始）
+    - GRU 64维自训练词向量、单向、双层[256,128]
+2. 实验2 双层[256,128]效果更好，对比增加wiki预训练词向量对比**实验1**：
+    - GRU 100维自训练词向量、单向、双层[256,128]
+    - GRU 100维wiki预训练词向量、单向、双层[256,128]
+3. 实验3 增加wiki预训练词向量效果更好，增加attention对比**实验2**：
+    - GRU 100维wiki预训练词向量、单向、双层[256,128]、有attention
+4. 实验4 增加双向GRU，对比**实验3**：
+    - GRU 双向、双层[256,128], 无attention
+    - GRU 双向、双层[256,128], 有attention
+5. 实验5 使用LSTM_Cell,对比GRU_Cell**实验4**
+6. 实验6 测试transformer的抽取效果：
+
+实验1： 调整config.hidden_dim=[]
 ```
-TextRNN train
-Training and evaluating...
-Epoch: 1
-Iter:      0, Train Loss:    2.3, Train Acc:   9.38%, Val Loss:    2.3, Val Acc:  10.78%, Time: 0:00:14 *
-Iter:    100, Train Loss:   0.92, Train Acc:  68.75%, Val Loss:    1.1, Val Acc:  63.58%, Time: 0:01:30 *
-Iter:    200, Train Loss:   0.57, Train Acc:  83.59%, Val Loss:   0.77, Val Acc:  76.48%, Time: 0:02:45 *
-Iter:    300, Train Loss:   0.39, Train Acc:  86.72%, Val Loss:   0.77, Val Acc:  79.44%, Time: 0:04:00 *
-Epoch: 2
-Iter:    400, Train Loss:   0.26, Train Acc:  93.75%, Val Loss:   0.63, Val Acc:  82.34%, Time: 0:05:16 *
-Iter:    500, Train Loss:    0.3, Train Acc:  91.41%, Val Loss:   0.64, Val Acc:  82.12%, Time: 0:06:31
-Iter:    600, Train Loss:   0.43, Train Acc:  88.28%, Val Loss:   0.55, Val Acc:  83.50%, Time: 0:07:45 *
-Iter:    700, Train Loss:   0.21, Train Acc:  94.53%, Val Loss:   0.54, Val Acc:  84.32%, Time: 0:09:00 *
-Epoch: 3
-Iter:    800, Train Loss:    0.2, Train Acc:  92.97%, Val Loss:   0.49, Val Acc:  86.74%, Time: 0:10:15 *
-Iter:    900, Train Loss:   0.14, Train Acc:  93.75%, Val Loss:   0.46, Val Acc:  88.32%, Time: 0:11:29 *
-Iter:   1000, Train Loss:   0.16, Train Acc:  97.66%, Val Loss:   0.42, Val Acc:  88.34%, Time: 0:12:44 *
-Iter:   1100, Train Loss:   0.19, Train Acc:  93.75%, Val Loss:   0.41, Val Acc:  89.12%, Time: 0:14:00 *
-Epoch: 4
-Iter:   1200, Train Loss:   0.13, Train Acc:  97.66%, Val Loss:   0.38, Val Acc:  90.56%, Time: 0:15:15 *
-Iter:   1300, Train Loss:  0.051, Train Acc:  97.66%, Val Loss:   0.37, Val Acc:  89.70%, Time: 0:16:29
-Iter:   1400, Train Loss:  0.045, Train Acc: 100.00%, Val Loss:   0.34, Val Acc:  91.04%, Time: 0:17:44 *
-Iter:   1500, Train Loss:   0.19, Train Acc:  95.31%, Val Loss:   0.36, Val Acc:  90.16%, Time: 0:18:58
-Epoch: 5
-Iter:   1600, Train Loss:   0.12, Train Acc:  96.09%, Val Loss:   0.35, Val Acc:  90.86%, Time: 0:20:14
-Iter:   1700, Train Loss:   0.15, Train Acc:  95.31%, Val Loss:   0.32, Val Acc:  91.86%, Time: 0:21:29 *
-Iter:   1800, Train Loss:   0.12, Train Acc:  96.09%, Val Loss:   0.38, Val Acc:  90.30%, Time: 0:22:44
-Iter:   1900, Train Loss:  0.055, Train Acc:  97.66%, Val Loss:   0.34, Val Acc:  91.32%, Time: 0:24:00
-Epoch: 6
-Iter:   2000, Train Loss:  0.045, Train Acc:  98.44%, Val Loss:   0.45, Val Acc:  88.80%, Time: 0:25:15
-Iter:   2100, Train Loss:  0.056, Train Acc:  98.44%, Val Loss:   0.38, Val Acc:  90.14%, Time: 0:26:30
-Iter:   2200, Train Loss:  0.025, Train Acc: 100.00%, Val Loss:   0.37, Val Acc:  90.98%, Time: 0:27:44
-Iter:   2300, Train Loss:  0.094, Train Acc:  96.88%, Val Loss:   0.41, Val Acc:  89.30%, Time: 0:28:59
-Epoch: 7
-Iter:   2400, Train Loss:  0.028, Train Acc:  99.22%, Val Loss:   0.35, Val Acc:  91.50%, Time: 0:30:13
-Iter:   2500, Train Loss:  0.055, Train Acc:  99.22%, Val Loss:   0.33, Val Acc:  91.54%, Time: 0:31:28
-Iter:   2600, Train Loss:  0.073, Train Acc:  97.66%, Val Loss:   0.35, Val Acc:  91.46%, Time: 0:32:42
-Iter:   2700, Train Loss:   0.13, Train Acc:  96.09%, Val Loss:   0.32, Val Acc:  91.62%, Time: 0:33:57
-No optimization for a long time, auto-stopping...
-
-Test
-Testing...
-Test Loss:    0.2, Test Acc:  94.62%
-Precision, Recall and F1-Score...
-              precision    recall  f1-score   support
-
-          体育       0.98      0.98      0.98      1000
-          财经       0.93      0.98      0.96      1000
-          房产       1.00      0.99      1.00      1000
-          家居       0.96      0.80      0.87      1000
-          教育       0.92      0.92      0.92      1000
-          科技       0.94      0.96      0.95      1000
-          时尚       0.91      0.97      0.94      1000
-          时政       0.92      0.94      0.93      1000
-          游戏       0.96      0.96      0.96      1000
-          娱乐       0.95      0.95      0.95      1000
-
-    accuracy                           0.95     10000
-   macro avg       0.95      0.95      0.95     10000
-weighted avg       0.95      0.95      0.95     10000
-
-Confusion Matrix...
-[[983   0   0   0   2   0   0   0   1  14]
- [  0 983   1   0   4   1   1  10   0   0]
- [  0   1 995   2   1   0   0   1   0   0]
- [  0  29   0 795  32  24  54  52   7   7]
- [ 15  18   0   4 919  16   2   8   6  12]
- [  0   1   0   8   7 964   3   2  14   1]
- [  0   1   0  12   5   1 966   2   5   8]
- [  0  18   0   2  23  11   0 942   3   1]
- [  4   2   0   0   5   6  19   0 960   4]
- [  3   1   1   8   5   5  13   4   5 955]]
-Time usage: 0:00:53
-
+- Test1 【128】    Loss:    0.2, Test Acc:  94.71%
+- Test2 【128,128】Loss:    0.2, Test Acc:  94.62%
+- Test3 【256,128】Loss:   0.22, Test Acc:  95.23%
+```
+实验2 是否使用wiki_100.utf8：  use_pre_trained = True/False
+```
+- Test Loss:【256,128】否   0.19, Test Acc:  94.86%
+- Test Loss:【256,128】是   0.17, Test Acc:  95.47%
 ```
 
+实验3  wiki_100.utf8：【256,128】  +  attention： 调整 last = self._attention(_outputs)
 ```
+Testing...  
+Test Loss:   0.16, Test Acc:  96.18%
+```
+
+实验4 GRU双向+  有无 attention对比：  双向tf.nn.dynamic_rnn--->>---tf.nn.bidirectional_dynamic_rnn
+```
+Test Loss:无attention    0.2, Test Acc:  95.79%
+Test Loss:有attention   0.13, Test Acc:  96.39%
+```
+
+实验5 LSTM双向+attention 对比 GRU：<br>
+  
+  
+
+
 Training and evaluating...
 Text_CNN train
 Epoch: 1
@@ -721,8 +685,13 @@ Confusion Matrix...
 Time usage: 0:00:07
 
 ```
+RNN: Testing...
+Test Loss:    0.2, Test Acc:  94.62%
 
+CNN: Testing...
+Test Loss:   0.13, Test Acc:  96.06%
 对比结果发现CNN的效果居然大于RNN的效果，考虑embedding_size=64太小，所以我打算增大到100进行实验：<br>
+
 CNN训练后的测试结果：
 ```
 Testing...
@@ -1079,3 +1048,6 @@ def batch_iter(x, y, batch_size=64):
         if flag:  # 同上
             break
 ```
+
+## 参考内容
+[github-CNN-RNN for text classification](https://github.com/rejae/text-classification-cnn-rnn)
