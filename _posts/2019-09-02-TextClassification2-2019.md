@@ -538,7 +538,7 @@ embedding_size = 64维，两层GRU layer都是128维， time_step=600, 两层lay
 
 5. 实验5 使用LSTM_Cell,对比GRU_Cell**实验4**
 
-6. 实验6 测试transformer的抽取效果：
+
 
 实验1： 调整config.hidden_dim=[]
 ```
