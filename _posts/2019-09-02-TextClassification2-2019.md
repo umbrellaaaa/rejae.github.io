@@ -610,7 +610,7 @@ embedding_size = 64维，两层GRU layer都是128维， time_step=600, 两层lay
 
 
 
-## 实验
+## 神经网络实验
 1. 实验1 采用原始参数训练，几个关键参数：
     - GRU 64维自训练词向量、单向、单层
     - GRU 64维自训练词向量、单向、双层[128,128]（原始）
@@ -896,10 +896,10 @@ def batch_iter(x, y, batch_size=64):
 ```python
     print('Training and evaluating...')
     start_time = time.time()
-    total_batch = 0  # 总批次
-    best_acc_val = 0.0  # 最佳验证集准确率
-    last_improved = 0  # 记录上一次提升批次
-    require_improvement = 1000  # 如果超过1000轮未提升，提前结束训练
+    total_batch = 0  #总批次
+    best_acc_val = 0.0  #最佳验证集准确率
+    last_improved = 0  #记录上一次提升批次
+    require_improvement = 1000  #如果超过1000轮未提升，提前结束训练
 
     flag = False
     for epoch in range(config.num_epochs):
@@ -909,18 +909,18 @@ def batch_iter(x, y, batch_size=64):
             feed_dict = feed_data(x_batch, y_batch, config.dropout_keep_prob)
 
             if total_batch % config.save_per_batch == 0:
-                # 每多少轮次将训练结果写入tensorboard scalar
+                #每多少轮次将训练结果写入tensorboard scalar
                 s = session.run(merged_summary, feed_dict=feed_dict)
                 writer.add_summary(s, total_batch)
 
             if total_batch % config.print_per_batch == 0:
-                # 每多少轮次输出在训练集和验证集上的性能
+                #每多少轮次输出在训练集和验证集上的性能
                 feed_dict[model.keep_prob] = 1.0
                 loss_train, acc_train = session.run([model.loss, model.acc], feed_dict=feed_dict)
                 loss_val, acc_val = evaluate(session, x_val, y_val)  # todo
 
                 if acc_val > best_acc_val:
-                    # 保存最好结果
+                    #保存最好结果
                     best_acc_val = acc_val
                     last_improved = total_batch
                     saver.save(sess=session, save_path=save_path)
@@ -934,15 +934,15 @@ def batch_iter(x, y, batch_size=64):
                 print(msg.format(total_batch, loss_train, acc_train, loss_val, acc_val, time_dif, improved_str))
 
             feed_dict[model.keep_prob] = config.dropout_keep_prob
-            session.run(model.optim, feed_dict=feed_dict)  # 运行优化
+            session.run(model.optim, feed_dict=feed_dict)  #运行优化
             total_batch += 1
 
             if total_batch - last_improved > require_improvement:
-                # 验证集正确率长期不提升，提前结束训练
+                #验证集正确率长期不提升，提前结束训练
                 print("No optimization for a long time, auto-stopping...")
                 flag = True
-                break  # 跳出循环
-        if flag:  # 同上
+                break  #跳出循环
+        if flag:  #同上
             break
 ```
 
