@@ -15,10 +15,10 @@ tags:
 
 
 ## 前言
-用一周时间完成一个文本分类任务：<br>
+用一段时间完成一个文本分类任务：<br>
 1. 回顾一下数据预处理方法
-2. 传统方式用LR, Bays, XGBoost
-3. 深度学习用CNN，RNN，Transformer
+2. 传统方式用LR, Bays
+3. 深度学习用CNN，RNN(多层、双向、attention)，Transformer
 
 <p id = "build"></p>
 ---
@@ -177,11 +177,6 @@ def batch_iter(x, y, batch_size=64):
 ### TextCNN
 cnn_model.py
 ```python
-# coding: utf-8
-
-import tensorflow as tf
-
-
 class TCNNConfig(object):
     """CNN配置参数"""
 
@@ -256,23 +251,6 @@ class TextCNN(object):
 ```
 run_cnn.py
 ```python
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-
-import os
-import sys
-import time
-from datetime import timedelta
-
-import numpy as np
-import tensorflow as tf
-from sklearn import metrics
-
-from cnn_model import TCNNConfig, TextCNN
-from data.cnews_loader import read_vocab, read_category, batch_iter, process_file, build_vocab
-
 base_dir = 'data/cnews'
 train_dir = os.path.join(base_dir, 'cnews.train.txt')
 test_dir = os.path.join(base_dir, 'cnews.test.txt')
@@ -441,8 +419,8 @@ def test():
 
 
 if __name__ == '__main__':
-    # if len(sys.argv) != 2 or sys.argv[1] not in ['train', 'test']:
-    #     raise ValueError("""usage: python run_cnn.py [train / test]""")
+    if len(sys.argv) != 2 or sys.argv[1] not in ['train', 'test']:
+        raise ValueError("""usage: python run_cnn.py [train / test]""")
 
     print('Configuring CNN model...')
     config = TCNNConfig()
@@ -464,7 +442,6 @@ if __name__ == '__main__':
 
 --------
 
-CNN，RNN文本分类项目，作者的编码非常规范，tf的命名域处理的也很好，配置文件也处理的杠杠的。<br>
 回顾一下cnn模型需要的参数：<br>
 字的维度，句子长度，词汇表大小<br>
 卷积核大小，卷积核数目，隐藏层大小<br>
@@ -537,32 +514,8 @@ session.run(model.optim, feed_dict=feed_dict)#模型训练
             last = _outputs[:, -1, :]  # 取最后一个时序输出作为结果
 
 ```
-### RNN张量变化分析
-对比发现RNN的构建较CNN的麻烦一些，除了LSTM与GRU的cell选择，多层cell的堆叠外，还需要注意_output的输出。<br>
-  tf.nn.dynamic_rnn ,    Returns:
-    A pair (outputs, state) where:
-
-    outputs: The RNN output `Tensor`.
-
-      If time_major == False (default), this will be a `Tensor` shaped:
-        `[batch_size, max_time, cell.output_size]`.
-
-      If time_major == True, this will be a `Tensor` shaped:
-        `[max_time, batch_size, cell.output_size]`.
-
-打开pycharm的debug模式，跟踪一下张量的变换：<br>
-input: [batch_size, seq_len, embedding_size]<br>
-由于是两层的MultiRNNCell, embedding_size传入后，经过两层的RNN，输出两个64维的隐状态，然后拼接成为一个128维的隐状态。动态RNN经过seq_len=600次递归调用，输出output的shape是：[batch_size, max_len, 2*embedding_size]。<br>
-我们取的last=_outputs[:,-1,:]即我们只取最后一个单元的输出(即第600个字位置处)。<br>
-至于为什么采取concat而不是取最后一层的输出值，根据我的理解是因为第一层抽取浅层特征，高层抽取深层特征，拼接后能兼顾。<br>
-之后再接入两个全连接层，就很简单了。
-### CNN张量变化分析
-input: [batch_size, seq_len, embedding_size]<br>
-conv:[batch_size, 600-5+1, 256]，其中600-5+1=596是seq_len用尺寸为5的卷积核卷积后的结果，256是一共256个卷积核。<br>
-gmp是由conv采取reduce_max生成:[batch_size, 256]
-
-
-
+### RNN模型小结
+embedding_size = 64维，两层GRU layer都是128维， time_step=600, 两层layer后取最后一个time_step结果传入projection_layer，再传入分类Layer.
 
 
 
@@ -571,15 +524,20 @@ gmp是由conv采取reduce_max生成:[batch_size, 256]
     - GRU 64维自训练词向量、单向、单层
     - GRU 64维自训练词向量、单向、双层[128,128]（原始）
     - GRU 64维自训练词向量、单向、双层[256,128]
+    
 2. 实验2 双层[256,128]效果更好，对比增加wiki预训练词向量对比**实验1**：
     - GRU 100维自训练词向量、单向、双层[256,128]
     - GRU 100维wiki预训练词向量、单向、双层[256,128]
+
 3. 实验3 增加wiki预训练词向量效果更好，增加attention对比**实验2**：
     - GRU 100维wiki预训练词向量、单向、双层[256,128]、有attention
+
 4. 实验4 增加双向GRU，对比**实验3**：
     - GRU 双向、双层[256,128], 无attention
     - GRU 双向、双层[256,128], 有attention
+
 5. 实验5 使用LSTM_Cell,对比GRU_Cell**实验4**
+
 6. 实验6 测试transformer的抽取效果：
 
 实验1： 调整config.hidden_dim=[]
@@ -606,8 +564,12 @@ Test Loss:无attention    0.2, Test Acc:  95.79%
 Test Loss:有attention   0.13, Test Acc:  96.39%
 ```
 
-实验5 LSTM双向+attention 对比 GRU：<br>
-  
+实验5 LSTM双向+attention VS GRU双向+attention：<br>
+```
+Test Loss:   0.14, Test Acc:  95.99%
+
+
+```
 
 
 
