@@ -81,8 +81,99 @@ X=list(train_df[1])
 y=list(train_df[0])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
 ```
-#### 读取数据；构建词表；读取词表；读取类别；将文件转为id表示
+
+## 传统LR模型交叉训练：
+```python
+import pandas as pd
+import jieba
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import f1_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import KFold, StratifiedKFold
+import re
+import warnings
+import os
+
+warnings.filterwarnings('ignore')
+
+base_path = 'E:/data/cnews/'
+train_path = base_path + 'cnews.train.txt'
+val_path = base_path + 'cnews.val.txt'
+test_path = base_path + 'cnews.test.txt'
+
+def get_cut_text(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        m_list = f.readlines()
+        train_data = []
+        labels = []
+        for idx, item in enumerate(m_list):
+            label, data = item.split('\t')
+            labels.append(label)
+            sentence = ' '.join(jieba.cut(str(item)))
+            train_data.append(sentence.lstrip())
+    label_id = get_label_id(labels)
+    return train_data, label_id
+
+
+# 处理标签多分类
+def get_label_id(label):
+    """读取分类目录，固定"""
+    categories = ['体育', '财经', '房产', '家居', '教育', '科技', '时尚', '时政', '游戏', '娱乐']
+    cat_to_id = dict(zip(categories, range(len(categories))))
+    label_id = [cat_to_id[item_label] for item_label in label]
+    return label_id
+
+
+# 处理文本特征 train/valid/test三个数据集
+train_data, train_label_id = get_cut_text(train_path)
+
+val_data, val_label_id = get_cut_text(val_path)
+test_data, test_label_id = get_cut_text(test_path)
+
+train_len = len(train_data)
+test_len = len(test_data)
+tf = TfidfVectorizer(ngram_range=(1, 4), analyzer='char')
+tf_feat = tf.fit_transform(train_data + test_data)  # train test 全部传入
+
+# val_tf_feat = tf.fit_transform(val_data)
+
+X = tf_feat[:train_len]
+y = train_label_id
+y = np.array(y)
+N = 5
+kf = StratifiedKFold(n_splits=N, random_state=42, shuffle=True)
+oof = np.zeros((X.shape[0], 10))
+oof_sub = np.zeros((len(test_data), 10))
+
+for j, (train_in, test_in) in enumerate(kf.split(X, y)):
+    print('running', j)
+    X_train, X_test, y_train, y_test = X[train_in], X[test_in], y[train_in], y[test_in]
+    clf = LogisticRegression(C=1.0)  # 正则化系数λ的倒数，float类型，默认为1.0。必须是正浮点型数。像SVM一样，越小的数值表示越强的正则化。
+    clf.fit(X_train, y_train)
+    test_y = clf.predict_proba(X_test)
+    oof[test_in] = test_y
+    test_data_predict = clf.predict_proba(tf_feat[train_len:])
+    oof_sub = oof_sub + test_data_predict
+
+xx_cv = f1_score(y, np.argmax(oof, axis=1), average='macro')
+print(xx_cv)
+
+count = 0
+for idx, item in enumerate(test_label_id):
+    if np.argmax(oof_sub, axis=1)[idx] == item:
+        count=count+1
+        
+acc = count/len(test_label_id)
+```
+实验结果：
+```
+train: f1 = 0.9643000758823714
+test: acc : 0.9428
+```
+####读取数据；构建词表；读取词表；读取类别；将文件转为id表示
 ```python
 def open_file(filename, mode='r'):
     
@@ -157,7 +248,7 @@ def process_file(filename, word_to_id, cat_to_id, max_length=600):
 
     return x_pad, y_pad
 ```
-#### 生成batch数据
+####生成batch数据
 最后一个batch取min(data_len, 最后一个batch的)
 ```python
 def batch_iter(x, y, batch_size=64):
