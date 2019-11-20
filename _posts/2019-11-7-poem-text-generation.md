@@ -194,8 +194,9 @@ tags:
 - 之前再调试github上的文本分类的代码的时候，明显感觉到代码清晰，模块化作的特别好，但是看这个poem text generation的代码的时候，感觉很糟心，一个init里面能写三页代码，很多操作都没有进行封装，embedding_layer, lstm_layer, loss_layer全都写在了init中，让人看得头痛，其中还不乏冗余的操作，如static_rnn的input，张量时序输入调整，直接用tf.unstack(input,tiem_step,axit=1)就可以了。
 - flat_outputs = tf.reshape(tf.concat(axis=1, values=outputs), [-1, hidden_size])这段代码将最后一层的outputs在time_step维度进行拼接，展开的结果是[16*64,128]与<br>softmax_w = tf.get_variable('softmax_w', [hidden_size, vocab_size])相乘得到矩阵[1024,vocab_size], 在这1024维中，0-16-32...是样本1的time_step输入。
 - rnn,gru的state初始化比较简单，lstm的有state初始化不同：
+
 ```python
-# part 1
+#part 1
 with tf.name_scope('initial_state'):
     self.zero_state = multi_cell.zero_state(self.batch_size, tf.float32)
     if self.cell_type == 'rnn' or self.cell_type == 'gru':
@@ -212,7 +213,9 @@ with tf.name_scope('initial_state'):
                                 'initial_lstm_state_' + str(idx + 1)))
                 for idx in range(self.num_layers)])
 
-# part 2
+#part 2
+
+
 if self.cell_type in ['rnn', 'gru']:
     state = self.zero_state.eval()
 else:
@@ -226,3 +229,4 @@ else:
     feed_dict = {self.input_data: x, self.targets: y, self.initial_state: state,
                     self.learning_rate: learning_rate}
 ```
+- 
