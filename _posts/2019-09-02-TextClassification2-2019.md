@@ -629,7 +629,7 @@ embedding_size = 64维，两层GRU layer都是128维， time_step=600, 两层lay
 
 5. 实验5 使用LSTM_Cell,对比GRU_Cell**实验4**
 
-
+6. 实验6 使用bert模型进行实验，测试效果
 
 实验1： 调整config.hidden_dim=[]
 ```
@@ -658,11 +658,16 @@ Test Loss:有attention   0.13, Test Acc:  96.39%
 实验5 LSTM双向+attention VS GRU双向+attention：<br>
 ```
 Test Loss:   0.14, Test Acc:  95.99%
-
-
 ```
 
-
+实验6 bert<br>
+由于训练时间太长，我只进行了19100个step就得到了不错的结果，再看到有albert可以使用，就不继续训练了。
+```
+eval_accuracy = 0.9672
+eval_loss = 0.2307739
+global_step = 19100
+loss = 0.2307739
+```
 
 
 ## 具体实验细节

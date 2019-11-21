@@ -55,6 +55,7 @@ class Solution(object):
 
         return dumy_node.next
 
+
 # 3. max sub-string of no repeat charactor
 class Solution(object):
 

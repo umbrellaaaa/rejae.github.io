@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      NLP任务的特点及其类型
-subtitle:   战场侦察
+subtitle:   
 date:       2019-10-26
 author:     RJ
 header-img: 

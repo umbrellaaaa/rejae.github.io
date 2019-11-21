@@ -47,6 +47,11 @@ print(good_febonacci(5)[0])
 print(good_febonacci(6)[0])
 ```
 
+## 树结构
+1. 二叉树的构建
+
+
+
 ## 排序
 1. 快排：双指针和单指针
 
@@ -182,3 +187,4 @@ class Solution(object):
             ans = max(ans, i-start+1)
         return ans
 ```
+

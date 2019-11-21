@@ -34,37 +34,19 @@ class DataBase(object):
         self.config = config
 
     def read_data(self):
-        """
-        读取数据
-        """
         raise NotImplementedError
 
     @staticmethod
     def trans_to_index(inputs, word_to_index):
-        """
-        将数据转换成索引表示
-        """
         raise NotImplementedError
 
     def padding(self, inputs, sequence_length):
-        """
-        对序列进行补全
-        :return:
-        """
         raise NotImplementedError
 
     def gen_data(self):
-        """
-        生成可导入到模型中的数据
-        :return:
-        """
         raise NotImplementedError
 
     def next_batch(self, x, y, batch_size):
-        """
-        生成batch数据
-        :return:
-        """
         raise NotImplementedError
 
 
@@ -73,58 +55,28 @@ class TrainDataBase(DataBase):
         super(TrainDataBase, self).__init__(config)
 
     def read_data(self):
-        """
-        读取数据
-        """
         raise NotImplementedError
 
     def remove_stop_word(self, inputs):
-        """
-        去除低频词和停用词
-        :return:
-        """
         raise NotImplementedError
 
     def get_word_vectors(self, words):
-        """
-        加载词向量
-        :return:
-        """
         raise NotImplementedError
 
     def gen_vocab(self, words, labels):
-        """
-        生成词汇表
-        :return:
-        """
         raise NotImplementedError
 
     @staticmethod
     def trans_to_index(inputs, word_to_index):
-        """
-        将数据转换成索引表示
-        """
         raise NotImplementedError
 
     def padding(self, inputs, sequence_length):
-        """
-        对序列进行补全
-        :return:
-        """
         raise NotImplementedError
 
     def gen_data(self):
-        """
-        生成可导入到模型中的数据
-        :return:
-        """
         raise NotImplementedError
 
     def next_batch(self, x, y, batch_size):
-        """
-        生成batch数据
-        :return:
-        """
         raise NotImplementedError
 
 
@@ -133,44 +85,22 @@ class EvalPredictDataBase(DataBase):
         super(EvalPredictDataBase, self).__init__(config)
 
     def read_data(self):
-        """
-        读取数据
-        """
         raise NotImplementedError
 
     def load_vocab(self):
-        """
-        生成词汇表
-        :return:
-        """
         raise NotImplementedError
 
     @staticmethod
     def trans_to_index(inputs, word_to_index):
-        """
-        将数据转换成索引表示
-        """
         raise NotImplementedError
 
     def padding(self, inputs, sequence_length):
-        """
-        对序列进行补全
-        :return:
-        """
         raise NotImplementedError
 
     def gen_data(self):
-        """
-        生成可导入到模型中的数据
-        :return:
-        """
         raise NotImplementedError
 
     def next_batch(self, x, y, batch_size):
-        """
-        生成batch数据
-        :return:
-        """
         raise NotImplementedError
 
 
@@ -490,30 +420,17 @@ class BiLstmAttenModel(BaseModel):
 # train_base.py
 class TrainerBase(object):
     def __init__(self):
-
         self.model = None  # 模型的初始化对象
         self.config = None  # 模型的配置参数
         self.current_step = 0
 
     def load_data(self):
-        """
-        创建数据对象
-        :return:
-        """
         raise NotImplementedError
 
     def create_model(self):
-        """
-        根据config文件选择对应的模型，并初始化
-        :return:
-        """
         raise NotImplementedError
 
     def train(self):
-        """
-        训练模型
-        :return:
-        """
         raise NotImplementedError
 ```
 ### train继承train_base
@@ -689,22 +606,6 @@ class Trainer(TrainerBase):
                             model_save_path = os.path.join(save_path, self.config["model_name"])
                             self.model.saver.save(sess, model_save_path, global_step=current_step)
 
-            # inputs = {"inputs": tf.saved_model.utils.build_tensor_info(self.model.inputs),
-            #           "keep_prob": tf.saved_model.utils.build_tensor_info(self.model.keep_prob)}
-            #
-            # outputs = {"predictions": tf.saved_model.utils.build_tensor_info(self.model.predictions)}
-            #
-            # # method_name决定了之后的url应该是predict还是classifier或者regress
-            # prediction_signature = tf.saved_model.signature_def_utils.build_signature_def(inputs=inputs,
-            #                                                                               outputs=outputs,
-            #                                                                               method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME)
-            # legacy_init_op = tf.group(tf.tables_initializer(), name="legacy_init_op")
-            # self.builder.add_meta_graph_and_variables(sess, [tf.saved_model.tag_constants.SERVING],
-            #                                           signature_def_map={"classifier": prediction_signature},
-            #                                           legacy_init_op=legacy_init_op)
-            #
-            # self.builder.save()
-
 
 if __name__ == "__main__":
     # 读取用户在命令行输入的信息
@@ -713,6 +614,91 @@ if __name__ == "__main__":
     args = parser.parse_args()
     trainer = Trainer(args)
     trainer.train()
-
 ```
 
+
+## 二. 数据处理流程规范，处理结果的保存
+```python
+        # 加载数据集
+        self.load_data()
+        self.train_inputs, self.train_labels, label_to_idx = self.train_data_obj.gen_data()
+        print("train data size: {}".format(len(self.train_labels)))
+        self.vocab_size = self.train_data_obj.vocab_size
+        print("vocab size: {}".format(self.vocab_size))
+        self.word_vectors = self.train_data_obj.word_vectors
+        self.label_list = [value for key, value in label_to_idx.items()]
+
+        self.eval_inputs, self.eval_labels = self.eval_data_obj.gen_data()
+        print("eval data size: {}".format(len(self.eval_labels)))
+```
+其中load_data():
+```
+    def load_data(self):
+        """
+        创建数据对象
+        :return:
+        """
+        # 生成训练集对象并生成训练数据
+        self.train_data_obj = TrainData(self.config)
+
+        # 生成验证集对象和验证集数据
+        self.eval_data_obj = EvalData(self.config)
+```
+其中gen_data():
+```
+    def gen_data(self):
+        """
+        生成可导入到模型中的数据
+        :return:
+        """
+        # 如果不是第一次数据预处理，则直接读取
+        if os.path.exists(os.path.join(self._output_path, "train_data.pkl")) and \
+                os.path.exists(os.path.join(self._output_path, "label_to_index.pkl")) and \
+                os.path.exists(os.path.join(self._output_path, "word_to_index.pkl")):
+            print("load existed train data")
+            with open(os.path.join(self._output_path, "train_data.pkl"), "rb") as f:
+                train_data = pickle.load(f)
+
+            with open(os.path.join(self._output_path, "word_to_index.pkl"), "rb") as f:
+                word_to_index = pickle.load(f)
+
+            self.vocab_size = len(word_to_index)
+
+            with open(os.path.join(self._output_path, "label_to_index.pkl"), "rb") as f:
+                label_to_index = pickle.load(f)
+
+            if os.path.exists(os.path.join(self._output_path, "word_vectors.npy")):
+                self.word_vectors = np.load(os.path.join(self._output_path, "word_vectors.npy"))
+
+            return np.array(train_data["inputs_idx"]), np.array(train_data["labels_idx"]), label_to_index
+
+        # 1，读取原始数据
+        inputs, labels = self.read_data()
+        print("read finished")
+
+        # 2，得到去除低频词和停用词的词汇表
+        words = self.remove_stop_word(inputs)
+        print("word process finished")
+
+        # 3，得到词汇表
+        word_to_index, label_to_index = self.gen_vocab(words, labels)
+        print("vocab process finished")
+
+        # 4，输入转索引
+        inputs_idx = self.trans_to_index(inputs, word_to_index)
+        print("index transform finished")
+
+        # 5，对输入做padding
+        inputs_idx = self.padding(inputs_idx, self._sequence_length)
+        print("padding finished")
+
+        # 6，标签转索引
+        labels_idx = self.trans_label_to_index(labels, label_to_index)
+        print("label index transform finished")
+
+        train_data = dict(inputs_idx=inputs_idx, labels_idx=labels_idx)
+        with open(os.path.join(self._output_path, "train_data.pkl"), "wb") as fw:
+            pickle.dump(train_data, fw)
+
+        return np.array(inputs_idx), np.array(labels_idx), label_to_index
+```
