@@ -9,9 +9,7 @@ catalog: true
 tags:
     - Algorithm
 
----
-##<p id = "build"></p>
----
+
 
 ## 构造链表
 ```python
