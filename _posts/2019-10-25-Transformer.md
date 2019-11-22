@@ -229,3 +229,15 @@ Transformer由且仅由self-Attenion和Feed Forward Neural Network组成。性�
 
         return outputs
 ```
+
+Attention机制的具体计算过程，如果对目前大多数方法进行抽象的话，可以将其归纳为两个过程：
+- 第一个过程是根据Query和Key计算权重系数
+- 第二个过程根据权重系数对Value进行加权求和
+
+而第一个过程又可以细分为两个阶段：第一个阶段根据Query和Key计算两者的相似性或者相关性；第二个阶段对第一阶段的原始分值进行归一化处理；这样，可以将Attention的计算过程抽象为如图10展示的三个阶段。
+
+![](https://pic2.zhimg.com/80/v2-07c4c02a9bdecb23d9664992f142eaa5_hd.jpg)
+
+
+## 参考
+[目前主流的attention方法都有哪些？--张俊林](https://www.zhihu.com/question/68482809/answer/264632289)
