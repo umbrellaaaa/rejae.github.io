@@ -32,7 +32,7 @@ PPT for Listening to Chaotic Whispers: A Deep Learning Framework for News-orient
 
 ![](https://pic1.zhimg.com/80/v2-f5d4d50c7ce2484e67e8e0b2879b71a8_hd.jpg)
 
-https://pic1.zhimg.com/80/v2-7d8632d93e26165cca1b913b5902364c_hd.jpg
+![](https://pic1.zhimg.com/80/v2-7d8632d93e26165cca1b913b5902364c_hd.jpg)
 
 ## 论文地址：
 [Listening to Chaotic Whispers: A Deep Learning Framework for News-oriented Stock Trend Prediction ](https://arxiv.org/abs/1712.02136)
