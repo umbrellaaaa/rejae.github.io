@@ -82,10 +82,18 @@ label_dict
  '时尚': 541,
  '星座': 144}
 
- 
 
 ```
+构建DataFrame:
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123table1.jpg)
+为DataFrame增加label_id一列：
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123table2.jpg)
+
+绘制不同label的数据分布：
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123dataanalyze.jpg)
+可见不同label的数据分布是不均匀的，其中科技，体育，股票占比较高，都超过了5000，而游戏，时尚，房产，星座都未超过1000。
+
+
 
 ## albert_tiny
 ```
@@ -240,4 +248,51 @@ Time usage: 0:00:22
 
 ```
 
-## Bilstm  use_pretrain = True
+## Bilstm   cell：lstm  use_pretrain = True
+best train:<br>
+Iter:   1800, Train Loss:   0.23, Train Acc:  94.53%, Val Loss:   0.37, Val Acc:  90.10%, Time: 0:52:46 *
+```
+Testing...
+Test Loss:   0.36, Test Acc:  89.67%
+Precision, Recall and F1-Score...
+              precision    recall  f1-score   support
+
+          财经       0.85      0.79      0.82       187
+          彩票       0.91      0.72      0.81        43
+          星座       0.82      0.69      0.75        13
+          娱乐       0.89      0.93      0.91       447
+          社会       0.75      0.86      0.80       247
+          股票       0.90      0.94      0.92       784
+          家居       0.94      0.82      0.88       146
+          时政       0.82      0.83      0.82       294
+          时尚       0.82      0.82      0.82        56
+          体育       0.96      0.97      0.97       688
+          科技       0.91      0.90      0.90       832
+          房产       0.99      0.97      0.98        97
+          游戏       0.78      0.81      0.80       113
+          教育       0.95      0.82      0.88       233
+
+    accuracy                           0.90      4180
+   macro avg       0.88      0.85      0.86      4180
+weighted avg       0.90      0.90      0.90      4180
+
+Confusion Matrix...
+[[147   0   0   4   1  28   0   2   0   1   3   0   0   1]
+ [  0  31   0   0   0   0   0   0   0   9   2   0   1   0]
+ [  0   0   9   0   2   0   0   0   0   0   1   0   1   0]
+ [  0   0   0 414   7   2   1   2   2   5  10   0   2   2]
+ [  0   1   0   9 212   2   2   9   0   1   5   0   4   2]
+ [ 20   0   0   0   3 739   0  12   0   0  10   0   0   0]
+ [  1   0   0   7   1   2 119   1   6   1   5   1   1   1]
+ [  1   0   0   5  17  13   1 243   0   3   9   0   0   2]
+ [  0   0   0   6   0   0   2   1  46   0   0   0   1   0]
+ [  0   0   0  10   5   0   0   5   0 665   2   0   1   0]
+ [  1   1   0   5  16  26   1  16   2   2 746   0  15   1]
+ [  0   0   0   0   0   1   0   0   0   1   1  94   0   0]
+ [  0   1   0   1   2   0   0   0   0   1  16   0  92   0]
+ [  2   0   2   2  15   4   0   6   0   1  10   0   0 191]]
+Time usage: 0:00:53
+
+```
+
+## Bilstm   cell：gru  use_pretrain = True
