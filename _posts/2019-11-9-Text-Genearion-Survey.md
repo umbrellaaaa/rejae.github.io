@@ -22,7 +22,7 @@ This paper presents a systematic survey on recent development of neural text gen
 - We compare different properties of these models and the corresponding techniques to handle their common problems such as gradient vanishing and generation diversity. 
 - Finally, we conduct a benchmarking experiment with different types of neural text generation models on two well-known datasets and discuss the empirical results along with the aforementioned model properties.
 
-summary: 介绍了传统的RNN+MLE的模型并指出其缺点； 引出了当前TG的前沿方法RL和GAN； 对比这些模型和相应方法来处理这些模型共同的问题如：梯度消失和文本多样性。
+summary: 介绍了传统的RNN+MLE的模型并指出其缺点； 引出了当前TG的前沿方法RL和GAN； 对比这些模型和相应方法来处理这些模型共同的问题如：**梯度消失和文本多样性**。
 
 ## 1. Introduction
 Given the ground truth sequence sn = [x0, x1, ..., xn−1] and <br>
@@ -35,13 +35,25 @@ However, the n-gram paradigm is theoretically impossible to capture long-term de
 
 **Pˆ(xt|context) ≈ P(xt|RNN(x0, x1, ..., xt−1))** <br>
 
+之前做的charRNN Model就属于这种。
+
+In this paper,  We carefully discuss different properties of these models and the corresponding techniques to handle their common problems such as gradient vanishing during training and generation diversity. Compared to a previous work [Xie, 2017] that is mainly on sequence-to-sequence (Seq2Seq) models, this paper focuses more on recently proposed **RL and GAN based methods** while Seq2Seq is a special case of the basic MLE methods. Finally, we conduct a benchmarking experiment with different types of neural text generation models on two well-known datasets and discuss the empirical results along with the aforementioned model properties. We hope this paper could provide with useful directions for further researches in this field.
+
+可以再试试seq2seq做文本生成。
 
 ## 2. On Training Paradigms of RNNLMs
 
 - 监督学习中的NTG一般采用MLE, 但是MLE会产生exposure bias(暴露偏差)。
 There is no guarantee that the model will still behave normally in those cases where the prefixs are a little bit different from those in the training data. The effect of exposure bias becomes more obvious and serious as the sequence becomes longer, making MLE less useful when the model is applied to long text generation tasks.
 
+### 2.1 NTG with Supervised Learning
+Although text generation is actually an unsupervised learning task, there do exist some supervised metric that are goodapproximations of the ground truth under some constraints. These algorithms focus on directly optimizing some supervised metric. Some of them may include someuseful tricksto help in alleviating some specific problems.
 
+**Maximum Likelihood Estimation**
+
+Typically, classical neural language models are trained through maximum likelihood estimation (MLE, a.k.a. teacher forcing) [Williams and Zipser, 1989]. MLE is natural for RNNLMs, since it regards the generation problem as a sequential multi-label classification and then directly optimizes the multi-label cross entropy. The objective of a language model Gθ trained via MLE can be formulated as
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191122TGMLE.jpg)
+where s0 represents the empty string.
 
 ## 总结
 - This paper presents an overview of the classic and recently proposed neural text generation models. The development of RNNLMs are discussed in detail with three training paradigms, namely supervised learning, reinforcement learning and adversarial training. 
