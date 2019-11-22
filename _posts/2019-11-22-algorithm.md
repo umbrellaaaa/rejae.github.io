@@ -10,7 +10,7 @@ tags:
     - Algorithm
 
 ---
-## <p id = "build"></p>
+##<p id = "build"></p>
 ---
 
 ## 构造链表

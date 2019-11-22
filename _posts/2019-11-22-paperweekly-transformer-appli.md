@@ -9,7 +9,3 @@ catalog: true
 tags:
     - Algorithm
 
----
-## <p id = "build"></p>
----
-
