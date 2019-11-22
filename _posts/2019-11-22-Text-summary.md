@@ -10,7 +10,7 @@ tags:
     - Algorithm
 
 ---
-#<p id = "build"></p>
+<p id = "build"></p>
 ---
 
 <h1>文本摘要简述</h1>
