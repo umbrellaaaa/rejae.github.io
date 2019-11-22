@@ -24,11 +24,22 @@ This paper presents a systematic survey on recent development of neural text gen
 
 summary: 介绍了传统的RNN+MLE的模型并指出其缺点； 引出了当前TG的前沿方法RL和GAN； 对比这些模型和相应方法来处理这些模型共同的问题如：梯度消失和文本多样性。
 
+## 1. Introduction
+Given the ground truth sequence sn = [x0, x1, ..., xn−1] and <br>
+a θ-parametrized language model Gθ(x|context) = Pˆ(x|context) (similarly hereinafter), <br>
+a typical NNLM adopts an approximation as:<br>
+
+**Pˆ(xt|context) ≈ P(xt|xt−n+1, xt−n+2, ..., xt−1)**
+
+However, the n-gram paradigm is theoretically impossible to capture long-term dependencies, according to some previous criticism [Rosenfeld, 2000]. To address this problem, recurrent neural network language model (RNNLM) [Mikolov et al., 2010] is developed, which is a more general implementation for a language model with Markov property. A typical RNNLM uses a recurrent neural network (RNN) to auto-regressively encode previous variant-length inputs into a “hidden” vector, which is then used during the inference of the next token. This procedure can be formulated as:<br>
+
+**Pˆ(xt|context) ≈ P(xt|RNN(x0, x1, ..., xt−1))** <br>
+
+
 ## 2. On Training Paradigms of RNNLMs
 
 - 监督学习中的NTG一般采用MLE, 但是MLE会产生exposure bias(暴露偏差)。
-There is no guarantee that the model will still behave normally in those cases where the prefixs are a little bit different from those in the training data. The effect of exposure bias becomes more obvious and serious as the sequence becomes longer, making MLE less useful when the model is applied to long text
-generation tasks.
+There is no guarantee that the model will still behave normally in those cases where the prefixs are a little bit different from those in the training data. The effect of exposure bias becomes more obvious and serious as the sequence becomes longer, making MLE less useful when the model is applied to long text generation tasks.
 
 
 

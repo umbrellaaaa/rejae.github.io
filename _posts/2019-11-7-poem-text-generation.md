@@ -15,6 +15,8 @@ tags:
 
 ## 相关文献阅读
 [理解dropout](https://blog.csdn.net/stdcoutzyx/article/details/49022443)
+[Chinese Poetry Generation with a Working Memory Model](https://arxiv.org/pdf/1809.04306.pdf)
+[GITHUB Code](https://github.com/xiaoyuanYi/WMPoetry)
 
 ## char_rnn_model.py
 
