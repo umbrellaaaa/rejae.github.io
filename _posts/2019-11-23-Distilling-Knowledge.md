@@ -122,6 +122,7 @@ objective function. Since the magnitudes of the gradients produced by the soft t
 
 
 ### 2.1 Matching logits is a special case of distillation
+
 Each case in the transfer set contributes a cross-entropy gradient, dC/dz<sub>i</sub>, with respect to each logit, z<sub>i</sub> of the distilled model. If the cumbersome model has logits v<sub>i</sub> which produce soft target probabilities p<sub>i</sub> and the transfer training is done at a temperature of T , this gradient is given by:
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation2.jpg)
@@ -137,7 +138,7 @@ sum{z<sub>i</sub>}= sum{v<sub>i</sub>}=0  Eq. 3 simplifies to:
 
 ## 3. Preliminary experiments on MNIST
 
-
+test
 ## 4. Experiments on speech recognition
 
 
