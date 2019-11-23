@@ -48,6 +48,7 @@ We achieve some surprising results on MNIST and we show that we can significantl
 
 We also introduce **a new type of ensemble** composed of one or more full models and many specialist models which learn to distinguish fine-grained classes that the full models confuse. Unlike a mixture of experts, these specialist models can be trained rapidly and in parallel.
 
+![](https://pic1.zhimg.com/v2-e6717bfe17182c4b6176a598b81ce176_r.jpg)
 
 ## 1. 引入
 - Many insects have a larval form that is optimized for extracting energy and nutrients from the environment and a completely different adult form that is optimized for the very different requirements of traveling and reproduction. 
@@ -71,6 +72,7 @@ We also introduce **a new type of ensemble** composed of one or more full models
 - It is generally accepted that the objective function used for training should reflect the true objective of the user as closely as possible. Despite this, models are usually trained to optimize performance on the training data when the real objective is to generalize well to new data. It would clearly be better to train models to generalize well, but this requires information about the correct way to generalize and this information is not normally available. 
 - When we are distilling the knowledge from a large model into a small one, however, we can train the small model to generalize in the same way as the large model. 
 - If the cumbersome model generalizes well because, for example, it is the average of a large ensemble of different models, a small model trained to generalize in the same way will typically do much better on test data than a small model that is trained in the normal way on the same training set as was used to train the ensemble.
+
 训练是的目标函数需要最大限度的反映正确目标，尽管如此模型还是通常被训练得在测试数据上表现的最优，但真实目标函数其实是需要在新的数据集上得到更好的泛化，这很难做到。
 
 当我们从一个已经训练的复杂模型中提取知识到一个小的模型这一过程中，我们可以使这个小的模型获得与复杂模型相近的泛化能力。一个较小的模型被训练的与复杂集成模型具有相近的泛化能力将比一个正常训练的小模型表现的更好。
@@ -80,6 +82,7 @@ to use the class probabilities produced by the cumbersome model as “soft targe
 small model.
 - For this transfer stage, we could use the same training set or a separate “transfer” set. When the cumbersome model is a large ensemble of simpler models, we can use an arithmetic or geometric mean of their individual predictive distributions as the soft targets.
 -  When the soft targets have high entropy, they provide much more information per training case than hard targets and much less variance in the gradient between training cases, so the small model can often be trained on much less data than the original cumbersome model and using a much higher learning rate.
+
 使用复杂模型产出的各个类别概率作为小模型训练的软目标是实现泛化能力的迁移的一种方法。在这个迁移阶段，我们可以使用原来的训练集或者新的'迁移集'。当这个复杂模型是由多个简单模型集成的时候，我们可以使用它们各自预测概率分布的算术或者几何平均作为小模型训练的软目标。
 
 - For tasks like MNIST in which the cumbersome model almost always produces the correct answer
@@ -95,9 +98,107 @@ model and they minimize the squared difference between the logits produced by th
 model and the logits produced by the small model.
 - Our more general solution, called “distillation”, is to raise the temperature of the final softmax until the cumbersome model produces a suitably soft set of targets. We then use the same high temperature when training the small model to match these soft targets. We show later that matching the logits of the cumbersome model is actually a special case of distillation.
 
+直接使用teacher网络的softmax的输出结果q，可能不大合适。因此，一个网络训练好之后，对于正确的答案会有一个很高的置信度。例如，在MNIST数据中，对于某个2的输入，对于2的预测概率会很高，而对于2类似的数字，例如3和7的预测概率为10<sup>-6</sup>和10<sup>-10</sup>。这样的话，teacher网络学到数据的相似信息（例如数字2和3，7很类似）很难传达给student网络。由于它们的概率值接近0。因此，文章提出了soft target。
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation.jpg)
+
+
+## 2. Distillation
+Neural networks typically produce class probabilities by using a “softmax” output layer that converts
+the logit, z<sub>i</sub>, computed for each class into a probability, q<sub>i</sub>, by comparing z<sub>i</sub> with the other logits.where T is a temperature that is normally set to 1. Using a higher value for T produces a softer probability distribution over classes.
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation.jpg)
+
+- In the simplest form of distillation, knowledge is transferred to the distilled model by training it on a transfer set and using a soft target distribution(that is produced by using the cumbersome model with a high temperature in its softmax) for each case in the transfer set .
+- The same high temperature is used when training the distilled model, but after it has been trained it uses a temperature of 1.
+
+- When the correct labels are known for all or some of the transfer set, this method can be significantly
+improved by also training the distilled model to produce the correct labels.
+- One way to do this is to use the correct labels to modify the soft targets, but we found that a better way is to simply use a weighted average of two different objective functions. 
+    - The first objective function is the cross entropy with the soft targets and this cross entropy is computed using the same high temperature in the softmax of the distilled model as was used for generating the soft targets from the cumbersome model.
+    - The second objective function is the cross entropy with the correct labels. This is computed using exactly the same logits in softmax of the distilled model but at a temperature of 1. 
+
+We found that the best results were generally obtained by using a considerably lower weight on the second
+objective function. Since the magnitudes of the gradients produced by the soft targets scale as 1/T<sup>2</sup> it is important to multiply them by T<sup>2</sup> when using both hard and soft targets. This ensures that the relative contributions of the hard and soft targets remain roughly unchanged if the temperature used for distillation is changed while experimenting with meta-parameters.
+
+
+### 2.1 Matching logits is a special case of distillation
+
+
+
+## 3. Preliminary experiments on MNIST
+
+
+## 4. Experiments on speech recognition
+
+
+
+### 4.1 Results
+
+
+## 5 Training ensembles of specialists on very big datasets
+
+### 5.1 The JFT dataset
+
+
+
+### 5.2 Specialist Models
+
+### 5.3 Assigning classes to specialists
+
+
+### 5.4 Performing inference with ensembles of specialists
+
+
+
+### 5.5 Results
+
+
+## 6 Soft Targets as Regularizers
+
+
+### 6.1 Using soft targets to prevent specialists from overfitting
+
+
+
+## 7 Relationship to Mixtures of Experts
+The use of specialists that are trained on subsets of the data has some resemblance to mixtures of
+experts [6] which use a gating network to compute the probability of assigning each example to each
+expert. At the same time as the experts are learning to deal with the examples assigned to them, the
+gating network is learning to choose which experts to assign each example to based on the relative
+discriminative performance of the experts for that example. Using the discriminative performance
+of the experts to determine the learned assignments is much better than simply clustering the input
+vectors and assigning an expert to each cluster, but it makes the training hard to parallelize: First,
+the weighted training set for each expert keeps changing in a way that depends on all the other
+experts and second, the gating network needs to compare the performance of different experts on
+the same example to know how to revise its assignment probabilities. These difficulties have meant
+that mixtures of experts are rarely used in the regime where they might be most beneficial: tasks
+with huge datasets that contain distinctly different subsets.
+
+It is much easier to parallelize the training of multiple specialists. We first train a generalist model
+and then use the confusion matrix to define the subsets that the specialists are trained on. Once these
+subsets have been defined the specialists can be trained entirely independently. At test time we can
+use the predictions from the generalist model to decide which specialists are relevant and only these
+specialists need to be run.
+
+
+## 8 Discussion
+We have shown that distilling works very well for transferring knowledge from an ensemble or
+from a large highly regularized model into a smaller, distilled model. On MNIST distillation works
+remarkably well even when the transfer set that is used to train the distilled model lacks any examples
+of one or more of the classes. For a deep acoustic model that is version of the one used by Android
+voice search, we have shown that nearly all of the improvement that is achieved by training an
+ensemble of deep neural nets can be distilled into a single neural net of the same size which is far
+easier to deploy.
+
+For really big neural networks, it can be infeasible even to train a full ensemble, but we have shown
+that the performance of a single really big net that has been trained for a very long time can be significantly improved by learning a large number of specialist nets, each of which learns to discriminate
+between the classes in a highly confusable cluster. We have not yet shown that we can distill the
+knowledge in the specialists back into the single large net.
 
 
 
 
 ## 参考
 [All The Ways You Can Compress BERT](http://mitchgordon.me/machine/learning/2019/11/18/all-the-ways-to-compress-BERT.html)
+
+[知识蒸馏简述-Ivan Yan](https://www.zhihu.com/people/Ivan0131/posts)
