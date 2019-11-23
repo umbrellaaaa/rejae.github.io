@@ -87,7 +87,7 @@ label_dict
 构建DataFrame:
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123table1.jpg)
 为DataFrame增加label_id一列：
-![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123table2.jpg)
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123data2.jpg)
 
 绘制不同label的数据分布：
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123dataanalyze.jpg)

@@ -35,10 +35,66 @@ tags:
     - Some methods only compress BERT w.r.t. certain downstream tasks. Others compress BERT in a way that is task-agnostic.
 
 
-知识蒸馏手段是其中之一，今天将要学习知识蒸馏的开山之作，论文 ：<br>
+知识蒸馏手段是其中之一，今天将要学习知识蒸馏的经典文章，论文 ：<br>
 [Distilling the Knowledge in a Neural Network](https://arxiv.org/pdf/1503.02531.pdf)
 
-##
+## 摘要
+
+- A very simple way to improve the performance of almost any machine learning algorithm is to train many different models on the same data and then to average their predictions [3].
+- Unfortunately, making predictions using a whole ensemble of models is cumbersome and may be too computationally expensive to allow deployment to a large number of users, especially if the individual models are large neural nets. 
+- Caruana and his collaborators [1] have shown that it is possible to compress the knowledge in an ensemble into a single model which is much easier to deploy and we develop this approach further using a different compression technique. 
+
+We achieve some surprising results on MNIST and we show that we can significantly improve the acoustic model of a heavily used commercial system by **distilling the knowledge** in an ensemble of models into a single model. 
+
+We also introduce **a new type of ensemble** composed of one or more full models and many specialist models which learn to distinguish fine-grained classes that the full models confuse. Unlike a mixture of experts, these specialist models can be trained rapidly and in parallel.
+
+
+## 1. 引入
+- Many insects have a larval form that is optimized for extracting energy and nutrients from the environment and a completely different adult form that is optimized for the very different requirements of traveling and reproduction. 
+- In large-scale machine learning, we typically use very similar models for the training stage and the deployment stage despite their very different requirements: 
+    - For tasks like speech and object recognition, training must extract structure from very large, highly redundant datasets but it does not need to operate in real time and it can use a huge amount of computation.
+    - Deployment to a large number of users, however, has much more stringent requirements on latency and computational resources. 
+- The analogy with insects suggests that we should be willing to train very cumbersome models if that makes it easier to extract structure from the data. The cumbersome model could be an ensemble of separately trained models or a single very large model trained with a very strong regularizer such as dropout [9]. 
+- Once the cumbersome model has been trained, we can then use a different kind of training, which we call “distillation” to transfer the knowledge from the cumbersome model to a small model that is more suitable for deployment. 
+- A version of this strategy has already been pioneered by Rich Caruana and his collaborators [1]. In their important paper they demonstrate convincingly that the knowledge acquired by a large ensemble of models can be transferred to a single small model.
+
+通常训练模型的时候可以耗费较资源来提取数据中更好的特征来完成相关任务，但是部署的时候就要考虑延迟、计算量的问题，毕竟商业面向的用户群体是很庞大的。类似于昆虫的不同生命阶段：幼虫擅于从环境中吸取营养，成虫更适应迁移和繁殖。我们在训练模型的时候可以训练较大且较耗费资源的模型以提取更好的特征，但是部署的时候，我们可以采用不同的训练方法--知识蒸馏，使知识从复杂的训练模型迁移到一个较小的适合部署的模型上。
+
+- A conceptual block that may have prevented more investigation of this very promising approach is that we tend to identify the knowledge in a trained model with the learned parameter values and this makes it hard to see how we can change the form of the model but keep the same knowledge. 
+- A more abstract view of the knowledge, that frees it from any particular instantiation, is that it is a learned mapping from input vectors to output vectors. 
+- For cumbersome models that learn to discriminate between a large number of classes, the normal training objective is to maximize the average log probability of the correct answer, but a side-effect of the learning is that the trained model assigns probabilities to all of the incorrect answers and even when these probabilities are very small, some of them are much larger than others. 
+- The relative probabilities of incorrect answers tell us a lot about how the cumbersome model tends to generalize. An image of a BMW, for example, may only have a very small chance of being mistaken for a garbage truck, but that mistake is still many times more probable than mistaking it for a carrot.
+
+一个概念上的block阻碍了更多人进行这项研究：我们试图从已经训练好的模型的参数中发现知识，但是如何改变模型结构但保留原有的知识，这件事很难做到。抛开知识的实例化，知识可以看做为一个从输入向量到输出向量的映射。
+在复杂模型判断多分类中，通常的训练目标函数是最大化正确类别的平均对数概率，但是这样学习的弊端是：训练的模型也分配了概率给了不正确的类别，尽管分配的概率很小，但是在这些错误概率之中，有一些概率也是远大于其他概率的。模型对不正确类别所分配的相对概率告诉我们这个复杂模型的泛化能力如何。比如在图像识别中，将收垃圾的车判别为宝马汽车的概率虽然小，但是将其误判成胡萝卜的概率更小。
+
+- It is generally accepted that the objective function used for training should reflect the true objective of the user as closely as possible. Despite this, models are usually trained to optimize performance on the training data when the real objective is to generalize well to new data. It would clearly be better to train models to generalize well, but this requires information about the correct way to generalize and this information is not normally available. 
+- When we are distilling the knowledge from a large model into a small one, however, we can train the small model to generalize in the same way as the large model. 
+- If the cumbersome model generalizes well because, for example, it is the average of a large ensemble of different models, a small model trained to generalize in the same way will typically do much better on test data than a small model that is trained in the normal way on the same training set as was used to train the ensemble.
+训练是的目标函数需要最大限度的反映正确目标，尽管如此模型还是通常被训练得在测试数据上表现的最优，但真实目标函数其实是需要在新的数据集上得到更好的泛化，这很难做到。
+
+当我们从一个已经训练的复杂模型中提取知识到一个小的模型这一过程中，我们可以使这个小的模型获得与复杂模型相近的泛化能力。一个较小的模型被训练的与复杂集成模型具有相近的泛化能力将比一个正常训练的小模型表现的更好。
+
+- An obvious way to transfer the generalization ability of the cumbersome model to a small model is
+to use the class probabilities produced by the cumbersome model as “soft targets” for training the
+small model.
+- For this transfer stage, we could use the same training set or a separate “transfer” set. When the cumbersome model is a large ensemble of simpler models, we can use an arithmetic or geometric mean of their individual predictive distributions as the soft targets.
+-  When the soft targets have high entropy, they provide much more information per training case than hard targets and much less variance in the gradient between training cases, so the small model can often be trained on much less data than the original cumbersome model and using a much higher learning rate.
+使用复杂模型产出的各个类别概率作为小模型训练的软目标是实现泛化能力的迁移的一种方法。在这个迁移阶段，我们可以使用原来的训练集或者新的'迁移集'。当这个复杂模型是由多个简单模型集成的时候，我们可以使用它们各自预测概率分布的算术或者几何平均作为小模型训练的软目标。
+
+- For tasks like MNIST in which the cumbersome model almost always produces the correct answer
+with very high confidence, much of the information about the learned function resides in the ratios
+of very small probabilities in the soft targets. For example, one version of a 2 may be given a
+probability of 10−6 of being a 3 and 10−9 of being a 7 whereas for another version it may be the
+other way around. This is valuable information that defines a rich similarity structure over the data
+(i. e. it says which 2’s look like 3’s and which look like 7’s) but it has very little influence on the
+cross-entropy cost function during the transfer stage because the probabilities are so close to zero.
+- Caruana and his collaborators circumvent this problem by using the logits (the inputs to the final
+softmax) rather than the probabilities produced by the softmax as the targets for learning the small
+model and they minimize the squared difference between the logits produced by the cumbersome
+model and the logits produced by the small model.
+- Our more general solution, called “distillation”, is to raise the temperature of the final softmax until the cumbersome model produces a suitably soft set of targets. We then use the same high temperature when training the small model to match these soft targets. We show later that matching the logits of the cumbersome model is actually a special case of distillation.
+
 
 
 
