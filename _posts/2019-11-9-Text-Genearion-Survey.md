@@ -47,13 +47,16 @@ In this paper,  We carefully discuss different properties of these models and th
 There is no guarantee that the model will still behave normally in those cases where the prefixs are a little bit different from those in the training data. The effect of exposure bias becomes more obvious and serious as the sequence becomes longer, making MLE less useful when the model is applied to long text generation tasks.
 
 ### 2.1 NTG with Supervised Learning
-Although text generation is actually an unsupervised learning task, there do exist some supervised metric that are goodapproximations of the ground truth under some constraints. These algorithms focus on directly optimizing some supervised metric. Some of them may include someuseful tricksto help in alleviating some specific problems.
 
 **Maximum Likelihood Estimation**
 
 Typically, classical neural language models are trained through maximum likelihood estimation (MLE, a.k.a. teacher forcing) [Williams and Zipser, 1989]. MLE is natural for RNNLMs, since it regards the generation problem as a sequential multi-label classification and then directly optimizes the multi-label cross entropy. The objective of a language model Gθ trained via MLE can be formulated as
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191122TGMLE.jpg)
 where s0 represents the empty string.
+
+It is important to note that, up to now, most existing applied state-of-the-art NTG models adopt MLE as their training objective [Karpathy and Fei-Fei, 2015; Hu et al., 2017]. MLE has better convergence rate and training robustness compared to other algorithms.
+
+Although text generation is actually an unsupervised learning task, there do exist some supervised metric that are goodapproximations of the ground truth under some constraints. These algorithms focus on directly optimizing some supervised metric. Some of them may include someuseful tricksto help in alleviating some specific problems.
 
 ## 总结
 - This paper presents an overview of the classic and recently proposed neural text generation models. The development of RNNLMs are discussed in detail with three training paradigms, namely supervised learning, reinforcement learning and adversarial training. 

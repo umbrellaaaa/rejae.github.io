@@ -20,22 +20,19 @@ tags:
 谈到Transformer这个特征抽取器就需要与CNN和RNN这两个抽取器作一个对比分析：<br>
 CNN像滑动窗口移动卷积核抽取特征，经过池化选择特征，局部抽取能力很强，抽取依赖关系能力较弱。<br>
 LSTM建模输入序列的依赖关系，保存和更新记忆单元，过长的句子性能会下降。<br>
-Transformer由且仅由self-Attenion和Feed Forward Neural Network组成。性能提升的关键是将任意两个单词的距离是1，解决NLP中棘手的长期依赖问题
-## 从以下四个方面对比CNN,RNN,Transformer：
-
-语义特征提取能力；
-长距离特征捕获能力；
-任务综合特征抽取能力；
-并行计算能力及运行效率
+Transformer由且仅由self-Attenion和Feed Forward Neural Network组成。性能提升的关键是将任意两个单词的距离是1，解决NLP中棘手的长期依赖问题。
 
 
 ## 回顾序列编码问题：
-RNN:        yt=f(yt−1,xt)
-CNN:        yt=f(xt−1,xt,xt+1)
+RNN:        y<sub>t</sub> = f (y<sub>t−1</sub>, x<sub>t</sub>)
 
-Attention:  yt=f(xt,A,B)            
+CNN:        y<sub>t</sub> = f (x<sub>t−1</sub>, x<sub>t</sub>, x<sub>t+1</sub>)
+
+Attention:  y<sub>t</sub> = f (x<sub>t</sub>, A, B)            
 
 其中A,B是另外一个序列（矩阵）。如果都取A=B=X，那么就称为Self Attention，它的意思是直接将xt与原来的每个词进行比较，最后算出yt！
+
+
 
 ## transformer结构
 
@@ -102,9 +99,18 @@ It expands the model’s ability to focus on different positions. Yes, in the ex
 
 It gives the attention layer multiple “representation subspaces”. As we’ll see next, with multi-headed attention we have not only one, but multiple sets of Query/Key/Value weight matrices (the Transformer uses eight attention heads, so we end up with eight sets for each encoder/decoder). Each of these sets is randomly initialized. Then, after training, each set is used to project the input embeddings (or vectors from lower encoders/decoders) into a different representation subspace.
 
+这个是Google提出的新概念，是Attention机制的完善。不过从形式上看，它其实就再简单不过了，就是把Q,K,V通过参数矩阵映射一下，然后再做Attention，把这个过程重复做h次，结果拼接起来就行了，可谓“大道至简”了。具体来说
+
+head<sub>i</sub>=Attention(QQ<sub>i</sub><sup>W</sup>,KK<sub>i</sub><sup>W</sup>,VV<sub>i</sub><sup>W</sup>)
+
+W<sub>i</sub><sup>Q</sup>∈R<sup>k×^k</sup>,  K<sub>i</sub><sup>Q</sup>∈R<sup>k×^k</sup>, V<sub>i</sub><sup>Q</sup>∈R<sup>v×^v</sup>
+
+MultiHead(Q,K,V)=Concat(head<sub>i</sub>,...,head<sub>h</sub>)
+
+最后得到一个n×(hd~v)的序列。所谓“多头”（Multi-Head），就是只多做几次同样的事情（参数不共享），然后把结果拼接。
 ![](https://jalammar.github.io/images/t/transformer_attention_heads_qkv.png)
 
-
+Attention层的好处是能够一步到位捕捉到全局的联系，因为它直接把序列两两比较（代价是计算量变为O(n2)，当然由于是纯矩阵运算，这个计算量相当也不是很严重）；相比之下，RNN需要一步步递推才能捕捉到，而CNN则需要通过层叠来扩大感受野，这是Attention层的明显优势。
 
 ## 参考
 [目前主流的attention方法都有哪些？--张俊林](https://www.zhihu.com/question/68482809/answer/264632289)
