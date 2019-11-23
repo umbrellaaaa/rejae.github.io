@@ -98,7 +98,7 @@ model and they minimize the squared difference between the logits produced by th
 model and the logits produced by the small model.
 - Our more general solution, called “distillation”, is to raise the temperature of the final softmax until the cumbersome model produces a suitably soft set of targets. We then use the same high temperature when training the small model to match these soft targets. We show later that matching the logits of the cumbersome model is actually a special case of distillation.
 
-直接使用teacher网络的softmax的输出结果q，可能不大合适。因此，一个网络训练好之后，对于正确的答案会有一个很高的置信度。例如，在MNIST数据中，对于某个2的输入，对于2的预测概率会很高，而对于2类似的数字，例如3和7的预测概率为10<sup>-6</sup>和10<sup>-10</sup>。这样的话，teacher网络学到数据的相似信息（例如数字2和3，7很类似）很难传达给student网络。由于它们的概率值接近0。因此，文章提出了soft target。
+直接使用teacher网络的softmax的输出结果q，可能不大合适。因此，一个网络训练好之后，对于正确的答案会有一个很高的置信度。例如，在MNIST数据中，对于某个2的输入，对于2的预测概率会很高，而对于2类似的数字，例如3和7的预测概率为10<sup>-6</sup>和10<sup>-10</sup>。这样的话，teacher网络学到数据的相似信息（例如数字2和3，7很类似）很难传达给student网络。由于它们的概率值接近0。因此，文章提出了softmax-T:
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation.jpg)
 
@@ -122,8 +122,18 @@ objective function. Since the magnitudes of the gradients produced by the soft t
 
 
 ### 2.1 Matching logits is a special case of distillation
+Each case in the transfer set contributes a cross-entropy gradient, dC/dz<sub>i</sub>, with respect to each logit, z<sub>i</sub> of the distilled model. If the cumbersome model has logits v<sub>i</sub> which produce soft target probabilities p<sub>i</sub> and the transfer training is done at a temperature of T , this gradient is given by:
 
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation2.jpg)
 
+If the temperature is high compared with the magnitude of the logits, we can approximate:
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation3.jpg)
+
+If we now assume that the logits have been zero-meaned separately for each transfer case so that
+sum{z<sub>i</sub>}= sum{v<sub>i</sub>}=0  Eq. 3 simplifies to:
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation4.jpg)
 
 ## 3. Preliminary experiments on MNIST
 
