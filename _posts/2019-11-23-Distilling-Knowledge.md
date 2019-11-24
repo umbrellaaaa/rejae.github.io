@@ -61,13 +61,18 @@ We also introduce **a new type of ensemble** composed of one or more full models
 
 通常训练模型的时候可以耗费较资源来提取数据中更好的特征来完成相关任务，但是部署的时候就要考虑延迟、计算量的问题，毕竟商业面向的用户群体是很庞大的。类似于昆虫的不同生命阶段：幼虫擅于从环境中吸取营养，成虫更适应迁移和繁殖。我们在训练模型的时候可以训练较大且较耗费资源的模型以提取更好的特征，但是部署的时候，我们可以采用不同的训练方法--知识蒸馏，使知识从复杂的训练模型迁移到一个较小的适合部署的模型上。
 
+Exanple：“蝴蝶以毛毛虫的形式吃树叶积攒能量逐渐成长，最后变换成蝴蝶这一终极形态来完成繁殖。”
+
+虽然是同一个个体，但是在面对不同环境以及不同任务时，个体的形态却是非常不同。不同的形态是为了完成特异性的任务而产生的变化，从而使个体能够更好的适应新的环境。
+比如毛毛虫的形态是为了更方便的吃树叶，积攒能量，但是为了增大活动范围提高繁殖几率，毛毛虫要变成蝴蝶来完成这样的繁殖任务。蒸馏神经网络，其本质上就是要完成一个从毛毛虫到蝴蝶的转变。
+
 - A conceptual block that may have prevented more investigation of this very promising approach is that we tend to identify the knowledge in a trained model with the learned parameter values and this makes it hard to see how we can change the form of the model but keep the same knowledge. 
 - A more abstract view of the knowledge, that frees it from any particular instantiation, is that it is a learned mapping from input vectors to output vectors. 
 - For cumbersome models that learn to discriminate between a large number of classes, the normal training objective is to maximize the average log probability of the correct answer, but a side-effect of the learning is that the trained model assigns probabilities to all of the incorrect answers and even when these probabilities are very small, some of them are much larger than others. 
 - The relative probabilities of incorrect answers tell us a lot about how the cumbersome model tends to generalize. An image of a BMW, for example, may only have a very small chance of being mistaken for a garbage truck, but that mistake is still many times more probable than mistaking it for a carrot.
 
 一个概念上的block阻碍了更多人进行这项研究：我们试图从已经训练好的模型的参数中发现知识，但是如何改变模型结构但保留原有的知识，这件事很难做到。抛开知识的实例化，知识可以看做为一个从输入向量到输出向量的映射。
-在复杂模型判断多分类中，通常的训练目标函数是最大化正确类别的平均对数概率，但是这样学习的弊端是：训练的模型也分配了概率给了不正确的类别，尽管分配的概率很小，但是在这些错误概率之中，有一些概率也是远大于其他概率的。模型对不正确类别所分配的相对概率告诉我们这个复杂模型的泛化能力如何。比如在图像识别中，将收垃圾的车判别为宝马汽车的概率虽然小，但是将其误判成胡萝卜的概率更小。
+在复杂模型判断多分类中，通常的训练目标函数是最大化正确类别的平均对数概率，但是这样学习的弊端是：训练的模型也分配了概率给了不正确的类别，尽管分配的概率很小，但是在这些错误概率之中，有一些概率也是远大于其他概率的。模型对不正确类别所分配的相对概率告诉我们这个复杂模型的泛化能力如何。比如在图像识别中，将宝马汽车判别为垃圾车的概率虽然小，但是将其误判成胡萝卜的概率更小。
 
 - It is generally accepted that the objective function used for training should reflect the true objective of the user as closely as possible. Despite this, models are usually trained to optimize performance on the training data when the real objective is to generalize well to new data. It would clearly be better to train models to generalize well, but this requires information about the correct way to generalize and this information is not normally available. 
 - When we are distilling the knowledge from a large model into a small one, however, we can train the small model to generalize in the same way as the large model. 
@@ -138,7 +143,7 @@ sum{z<sub>i</sub>}= sum{v<sub>i</sub>}=0  Eq. 3 simplifies to:
 
 ## 3. Preliminary experiments on MNIST
 
-test
+
 ## 4. Experiments on speech recognition
 
 
@@ -208,8 +213,49 @@ knowledge in the specialists back into the single large net.
 
 
 
+## 核心
+### 公式
+2006年的Model Compression提出的方法是直接比较logits来避免这个问题。具体地，对于每一条数据，记原模型产生的某个logits是 v<sub>i</sub> ，新模型产生的logits是z<sub>i</sub> ，我们需要最小化：
 
+1/2(z<sub>i</sub> - v<sub>i</sub>)^2
+
+而本文提出了一个更通用的方法Softmax-T:
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation.jpg)
+
+其中 T 是温度，这是从统计力学中的玻尔兹曼分布中借用的概念。容易证明，当温度  T  趋向于0时，softmax输出将收敛为一个one-hot向量；温度 T 趋向于无穷时，softmax的输出则更「软」。因此，在训练新模型的时候，可以使用较高的  T  使得softmax产生的分布足够软，这时让新模型的softmax输出近似原模型；在训练结束以后再使用正常的温度 1 来预测。具体地，在训练时我们需要最小化两个分布的交叉熵(Cross-entropy)，记新模型利用公式 Softmax-T 产生的分布是 q ，原模型产生的分布是 p ，则我们需要最小化:
+
+C = -p<sup>T</sup>log q
+
+在化学中，蒸馏是一个有效的分离沸点不同的组分的方法，大致步骤是先升温使低沸点的组分汽化，然后降温冷凝，达到分离出目标物质的目的。在前面提到的这个过程中，我们先让温度 T 升高，然后在测试阶段恢复「低温」，从而将原模型中的知识提取出来，因此将其称为是蒸馏，实在是妙。
+
+相关公式推导见[公式](https://zhuanlan.zhihu.com/p/90049906)
+
+### 蒸馏
+蒸馏神经网络取名为蒸馏（Distill），其实是一个非常形象的过程。
+
+我们把数据结构信息和数据本身当作一个混合物，分布信息通过概率分布被分离出来。首先，T值很大，相当于用很高的温度将关键的分布信息从原有的数据中分离，之后在同样的温度下用新模型融合蒸馏出来的数据分布，最后恢复温度，让两者充分融合。这也可以看成Prof. Hinton将这一个迁移学习过程命名为蒸馏的原因。
+
+### 蒸馏经验
+
+Transfer Set和Soft target
+
+实验证实，Soft target可以起到正则化的作用（不用soft target的时候需要early stopping，用soft target后稳定收敛）数据过少的话无法完整表达teacher学到的知识，需要增加无监督数据（用teacher的预测作为标签）或进行数据增强，可以使用的方法有：1.增加[MASK]，2.用相同POS标签的词替换，3.随机n-gram采样，具体步骤参考文献
+
+超参数T
+
+T越大越能学到teacher模型的泛化信息。比如MNIST在对2的手写图片分类时，可能给2分配0.9的置信度，3是1e-6，7是1e-9，从这个分布可以看出2和3有一定的相似度，因此这种时候可以调大T，让概率分布更平滑，展示teacher更多的泛化能力T可以尝试1～20之间
+
+BERT蒸馏蒸馏
+
+单BERT[2]：模型架构：单层BiLSTM；目标函数：logits的MSE蒸馏Ensemble BERT[3]：模型架构：BERT；目标函数：soft prob+hard prob；方法：MT-DNN。该论文用给每个任务训练多个MT-DNN，取soft target的平均，最后再训一个MT-DNN，效果比纯BERT好3.2%。但感觉该研究应该是刷榜的结晶，平常应该没人去训BERT ensemble吧。。BAM[4]：Born-aging Multi-task。用多个任务的Single BERT，蒸馏MT BERT；目标函数：多任务loss的和；方法：在mini-batch中打乱多个任务的数据，任务采样概率为  ，防止某个任务数据过多dominate模型、teacher annealing、layerwise-learning-rate，LR由输出层到输出层递减，因为前面的层需要学习到general features。最终student在大部分任务上超过teacher，而且上面提到的tricks也提供了不少帮助。文献4还不错，推荐阅读一下。TinyBERT[5]：截止201910的SOTA。利用Two-stage方法，分别对预训练阶段和精调阶段的BERT进行蒸馏，并且不同层都设计了损失函数。与其他模型的对比如下：
+
+![](https://pic4.zhimg.com/v2-06423040ac6234d719d80cab1820adbb_b.jpg)
 ## 参考
 [All The Ways You Can Compress BERT](http://mitchgordon.me/machine/learning/2019/11/18/all-the-ways-to-compress-BERT.html)
 
 [知识蒸馏简述-Ivan Yan](https://www.zhihu.com/people/Ivan0131/posts)
+[知识蒸馏是什么？](https://zhuanlan.zhihu.com/p/90049906)
+
+[Caruana et al., Model Compression, 2006](https://www.cs.cornell.edu/~caruana/compression.kdd06.pdf)
+[蒸馏神经网络到底在蒸馏什么？（设计思想篇）](https://zhuanlan.zhihu.com/p/39945855)
