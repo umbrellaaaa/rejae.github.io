@@ -166,28 +166,39 @@ by 7.6 to optimize test performance, this falls to 13.2% test errors.
 
 ## 4. Experiments on speech recognition
 
-
-
 ### 4.1 Results
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191125experimenttable.jpg)
 ## 5 Training ensembles of specialists on very big datasets
 
 ### 5.1 The JFT dataset
-
 ### 5.2 Specialist Models
-
 ### 5.3 Assigning classes to specialists
-
 ### 5.4 Performing inference with ensembles of specialists
-
 ### 5.5 Results
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191125experimenttable2.jpg)
 ## 6 Soft Targets as Regularizers
+One of our main claims about using soft targets instead of hard targets is that a lot of helpful information can be carried in soft targets that could not possibly be encoded with a single hard target. 
+- In this section we demonstrate that this is a very large effect by using far less data to fit the 85M parameters of the baseline speech model described earlier.
+- Table 5 shows that with only 3% of the data (about 20M examples), training the baseline model with hard targets leads to severe overfitting (we did early stopping, as the accuracy drops sharply after reaching 44.5%), whereas the same model trained with soft targets is able to recover almost all the information in the full training set (about 2% shy).
+- It is even more remarkable to note that we did not have to do early stopping: the system with soft targets simply “converged” to 57%. This shows that soft targets are a very effective way of communicating the regularities discovered by a model trained on all of the data to another model.
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191125table5.jpg)
 
 
 ### 6.1 Using soft targets to prevent specialists from overfitting
+The specialists that we used in our experiments on the JFT dataset collapsed all of their non-specialist
+classes into a single dustbin class. If we allow specialists to have a full softmax over all classes,
+there may be a much better way to prevent them overfitting than using early stopping. A specialist
+is trained on data that is highly enriched in its special classes. This means that the effective size of
+its training set is much smaller and it has a strong tendency to overfit on its special classes. This
+problem cannot be solved by making the specialist a lot smaller because then we lose the very helpful
+transfer effects we get from modeling all of the non-specialist classes.
+
+Our experiment using 3% of the speech data strongly suggests that if a specialist is initialized with
+the weights of the generalist, we can make it retain nearly all of its knowledge about the non-special
+classes by training it with soft targets for the non-special classes in addition to training it with hard
+targets. The soft targets can be provided by the generalist. We are currently exploring this approach.
 
 
 
@@ -286,10 +297,13 @@ BERT蒸馏蒸馏
 
 [蒸馏神经网络到底在蒸馏什么？（设计思想篇）](https://zhuanlan.zhihu.com/p/39945855)
 
+[Knowledge Distillation](https://medium.com/neuralmachine/knowledge-distillation-dc241d7c2322)
 
 ## MNIST蒸馏实验
 
 ### 较为复杂的三层卷积池化网络，训练100个epoch得到一个较为复杂的网络
+
+mnist_conv.py
 ```python
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
@@ -393,16 +407,13 @@ with tf.Session() as sess:
 ### 利用复杂模型的参数，在小的模型上进行蒸馏实验
 
 - 在这个过程中比较重要的一步是根据模型训练保存的文件恢复模型的参数：
-
 ```
-# donor & acceptor networks
-
+#donor & acceptor networks
 y_donor, donor_params = lenet4()
 y_acceptor, acceptor_params = fully_connected()
+----------------------------------------------------
 
-...
-
-# Donor loading
+#Donor loading
 donor_saver = tf.train.Saver(donor_params)
 donor_saver.restore(sess, 'checkpoints/source_model/' + donor_name)
 ```
@@ -416,6 +427,8 @@ truth_ent = tf.reduce_mean(- tf.reduce_sum(Y * tf.log(y_acceptor), reduction_ind
 distil_step = tf.train.GradientDescentOptimizer(0.1).minimize(distill_ent + truth_ent)
 ```
 
+
+distill.py
 ```python
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
@@ -440,7 +453,7 @@ p_keep_hidden = tf.placeholder("float")
 T = 1
 
 
-# lenet Model
+#lenet Model
 
 def lenet4_model(X, w, w2, w3, w4, w_o, p_keep_conv, p_keep_hidden):
     #  三个卷积+池化
@@ -481,10 +494,10 @@ def lenet4():
                                                                                                         w_o]
 
 
-#  return softmax-T*logits_v, param{ [w, w2, w3, w4, w_o] }
+#return softmax-T*logits_v, param{ [w, w2, w3, w4, w_o] }
 
 
-# NN Model
+#NN Model
 
 def fc_layer(inp, size, name):
     W_layer = tf.Variable(tf.truncated_normal([inp.get_shape()[1].value, size], stddev=0.1))
@@ -494,7 +507,7 @@ def fc_layer(inp, size, name):
     return res, [W_layer, b_layer]
 
 
-#  return softmax-T*logits_z, param{ [W_layer1, b_layer1,  W_layer2, b_layer2]  }
+#return softmax-T*logits_z, param{ [W_layer1, b_layer1,  W_layer2, b_layer2]  }
 def fully_connected():
     L1, fc_params1 = fc_layer(tf.reshape(X, [-1, 784]), 100, "L1")
     L1a = tf.nn.sigmoid(L1)
@@ -502,32 +515,32 @@ def fully_connected():
     return tf.nn.softmax((1.0 / T) * res), fc_params1 + fc_params2
 
 
-# donor & acceptor networks
+#donor & acceptor networks
 y_donor, donor_params = lenet4()
 y_acceptor, acceptor_params = fully_connected()
 
-# distillation
-# stop_gradient 阻止输入的节点的loss计入梯度计算；
+#distillation
+#stop_gradient 阻止输入的节点的loss计入梯度计算；
 distill_ent = tf.reduce_mean(- tf.reduce_sum(tf.stop_gradient(y_donor) * tf.log(y_acceptor), reduction_indices=1))
 truth_ent = tf.reduce_mean(- tf.reduce_sum(Y * tf.log(y_acceptor), reduction_indices=1))
 
 distil_step = tf.train.GradientDescentOptimizer(0.1).minimize(distill_ent + truth_ent)
 
 
-# Summaries
+#Summaries
 
 def prec(y_pred):
     return tf.reduce_mean(tf.cast(tf.equal(tf.argmax(y_pred, 1), tf.argmax(Y, 1)), tf.float32))
 
 
-# MNIST data(distill_ent + truth_ent)
+#MNIST data(distill_ent + truth_ent)
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
 trX, trY, teX, teY = mnist.train.images, mnist.train.labels, mnist.test.images, mnist.test.labels
 trX = trX.reshape(-1, 28, 28, 1)  # 28x28x1 input img
 teX = teX.reshape(-1, 28, 28, 1)  # 28x28x1 input img
 
 
-# distillate knowledge from donor to acceptor
+#distillate knowledge from donor to acceptor
 def distillate(net_name):
     acceptor_prec = prec(y_acceptor)
     donor_prec = prec(y_donor)
@@ -577,7 +590,7 @@ def distillate(net_name):
             acc_saver.save(sess, "checkpoints/" + net_name, global_step=i)
 
 
-# train net using back-prop
+#train net using back-prop
 def train_net(train_step, net_prec, net_params, net_name):
     net_prec = prec(y_acceptor)
 
@@ -587,9 +600,9 @@ def train_net(train_step, net_prec, net_params, net_name):
     tf.scalar_summary('accuracy', net_prec)
     summaries = tf.merge_all_summaries()
 
-    # Launch the graph in a session
+    #Launch the graph in a session
     with tf.Session() as sess:
-        # you need to initialize all variables
+        #you need to initialize all variables
         tf.initialize_all_variables().run()
 
         net_saver = tf.train.Saver(net_params)
@@ -623,12 +636,12 @@ train_prec = prec(y_acceptor)
 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(train_cross_ent)
 
 distillate(acceptor_name)
-# train_net(train_step, train_prec, acceptor_params, "L2")
+#train_net(train_step, train_prec, acceptor_params, "L2")
 
 ```
 
 ## 实验结果
-
+经过55000张图片，10个epoch训练，得到以下结果：        
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191125distill_compare.jpg)
 
-从图中我们可以看到进行知识蒸馏的模型比原来的模型收敛的更快，精度也更高
+从图中我们可以看到进行知识蒸馏的模型比原来的模型收敛的更快，精度也更高。
