@@ -142,7 +142,27 @@ sum{z<sub>i</sub>}= sum{v<sub>i</sub>}=0  Eq. 3 simplifies to:
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191123distillation4.jpg)
 
 ## 3. Preliminary experiments on MNIST
+- To see how well distillation works, we trained a single large neural net with two hidden layers
+of 1200 rectified linear hidden units on all 60,000 training cases. The net was strongly regularized
+using dropout and weight-constraints as described in [5].
+- **Dropout can be viewed as a way of training an exponentially large ensemble of models that share weights.** In addition, the input images were jittered by up to two pixels in any direction.
+- This net achieved 67 test errors whereas a smaller net with two hidden layers of 800 rectified linear hidden units and no regularization achieved 146 errors. 
+- But if the smaller net was regularized solely by adding the additional task of matching the soft targets produced by the large net at **a temperature of 20**, it achieved 74 test errors.
+- This shows that soft targets can transfer a great deal of knowledge to the distilled model, including the knowledge about how to generalize that is learned from translated training data even though the transfer set does not contain any translations.
 
+When the distilled net had 300 or more units in each of its two hidden layers, all temperatures above
+8 gave fairly similar results. But when this was radically reduced to 30 units per layer, temperatures
+in the range 2.5 to 4 worked significantly better than higher or lower temperatures.
+
+We then tried omitting all examples of the digit 3 from the transfer set. So from the perspective
+of the distilled model, 3 is a mythical digit that it has never seen. Despite this, the distilled model
+only makes 206 test errors of which 133 are on the 1010 threes in the test set. Most of the errors
+are caused by the fact that the learned bias for the 3 class is much too low. If this bias is increased
+by 3.5 (which optimizes overall performance on the test set), the distilled model makes 109 errors
+of which 14 are on 3s. So with the right bias, the distilled model gets 98.6% of the test 3s correct
+despite never having seen a 3 during training. If the transfer set contains only the 7s and 8s from the
+training set, the distilled model makes 47.3% test errors, but when the biases for 7 and 8 are reduced
+by 7.6 to optimize test performance, this falls to 13.2% test errors.
 
 ## 4. Experiments on speech recognition
 
@@ -214,6 +234,10 @@ knowledge in the specialists back into the single large net.
 
 
 ## 核心
+**Dropout can be viewed as a way of training an exponentially large ensemble of models that share weights.**
+
+
+
 ### 公式
 2006年的Model Compression提出的方法是直接比较logits来避免这个问题。具体地，对于每一条数据，记原模型产生的某个logits是 v<sub>i</sub> ，新模型产生的logits是z<sub>i</sub> ，我们需要最小化：
 
@@ -248,7 +272,12 @@ T越大越能学到teacher模型的泛化信息。比如MNIST在对2的手写图
 
 BERT蒸馏蒸馏
 
-单BERT[2]：模型架构：单层BiLSTM；目标函数：logits的MSE蒸馏Ensemble BERT[3]：模型架构：BERT；目标函数：soft prob+hard prob；方法：MT-DNN。该论文用给每个任务训练多个MT-DNN，取soft target的平均，最后再训一个MT-DNN，效果比纯BERT好3.2%。但感觉该研究应该是刷榜的结晶，平常应该没人去训BERT ensemble吧。。BAM[4]：Born-aging Multi-task。用多个任务的Single BERT，蒸馏MT BERT；目标函数：多任务loss的和；方法：在mini-batch中打乱多个任务的数据，任务采样概率为  ，防止某个任务数据过多dominate模型、teacher annealing、layerwise-learning-rate，LR由输出层到输出层递减，因为前面的层需要学习到general features。最终student在大部分任务上超过teacher，而且上面提到的tricks也提供了不少帮助。文献4还不错，推荐阅读一下。TinyBERT[5]：截止201910的SOTA。利用Two-stage方法，分别对预训练阶段和精调阶段的BERT进行蒸馏，并且不同层都设计了损失函数。与其他模型的对比如下：
+单BERT：模型架构：
+
+- 单层BiLSTM；目标函数：logits的MSE蒸馏
+- Ensemble BERT：模型架构：BERT；目标函数：soft prob+hard prob；方法：MT-DNN。该论文用给每个任务训练多个MT-DNN，取soft target的平均，最后再训一个MT-DNN，效果比纯BERT好3.2%。但感觉该研究应该是刷榜的结晶，平常应该没人去训BERT ensemble吧。。
+- BAM：Born-aging Multi-task。用多个任务的Single BERT，蒸馏MT BERT；目标函数：多任务loss的和；方法：在mini-batch中打乱多个任务的数据，任务采样概率为  ，防止某个任务数据过多dominate模型、teacher annealing、layerwise-learning-rate，LR由输出层到输出层递减，因为前面的层需要学习到general features。最终student在大部分任务上超过teacher，而且上面提到的tricks也提供了不少帮助。文献4还不错，推荐阅读一下。
+- TinyBERT：截止201910的SOTA。利用Two-stage方法，分别对预训练阶段和精调阶段的BERT进行蒸馏，并且不同层都设计了损失函数。与其他模型的对比如下：
 
 ![](https://pic4.zhimg.com/v2-06423040ac6234d719d80cab1820adbb_b.jpg)
 ## 参考
