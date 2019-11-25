@@ -630,3 +630,5 @@ distillate(acceptor_name)
 ## 实验结果
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191125distill_compare.jpg)
+
+从图中我们可以看到进行知识蒸馏的模型比原来的模型收敛的更快，精度也更高
