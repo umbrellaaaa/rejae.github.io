@@ -63,7 +63,7 @@ x<sub>i</sub> ∈ {0, 1}<sup>V</sup> for i ∈ {1, . . . , M},
 sentences as a sequence of indicators, and X as the set of possible inputs. Furthermore define the notation x[i,j,k] to indicate the sub-sequence of elements i, j, k.
 A summarizer takes x as input and outputs a shortened sentence y of length N < M. We will assume that the words in the summary also come from the same vocabulary V and that the output is a sequence y1, . . . , yN . Note that in contrast to related tasks, like machine translation, we will assume that the output length N is fixed, and that the system knows the length of the summary before generation.Next consider the problem of generating summaries. Define the set
 
-Y ⊂ ({0, 1}<sup>V</sup> , . . . , <sup>V</sup> ) 
+Y ⊂ ({0, 1}<sup>V</sup> , . . . , {0, 1}<sup>V</sup> ) 
 
 as all possible sentences of length N, i.e. for all i and y ∈ Y, yi is an indicator. We say a system is abstractive if it tries to find the optimal sequence from this set Y,
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126formula1.jpg)
@@ -117,7 +117,25 @@ For summarization this model can capture the relative importance of words to dis
 
 
 # 2. 扩展NLP知识面
+[好的想法从哪里来？](https://zhuanlan.zhihu.com/p/93765082)作者清华教授知远先生今天发的知乎文章：
 
+什么算是好的想法？ 好————学科发展角度的”好“；研究实践角度的”好“
+
+如何产生新的想法呢？总结有三种可行的基本途径：实践法；类比法；组合法
+
+初学者应该怎么做？
+
+与阅读论文、撰写论文、设计实验等环节相比，如何产生好的研究想法，是一个不太有章可循的环节，很难总结出固定的范式可供遵循。像小马过河，需要通过大量训练实践，来积累自己的研究经验。不过，对于初学者而言，仍然有几个简单可行的原则可以参考。
+- 一篇论文的可发表价值，取决于它与已有最直接相关工作间的Delta
+- 兼顾摘果子和啃骨头
+- 注意多项研究工作的主题连贯性
+- 注意总结和把握研究动态和趋势，因时而动
+
+补充：
+
+学术研究和论文发表，对个人而言也许意味着高薪资和奖学金，但其最终的目的还是真正的推动学科的发展。所以，要做经得起考验的学术研究，关键就在”真“与”新“，需要我们始终恪守和孜孜以求。
+
+著名历史学家、清华校友何炳棣先生曾在自传《读史阅世六十年》中提及著名数学家林家翘的一句嘱咐：“要紧的是不管搞哪一行，千万不要做第二等的题目。” 具体到每个领域，什么是一等的题目本身见仁见智，其实更指向内心“求真”的态度。
 
 # 3. 实践知识到代码上
 
