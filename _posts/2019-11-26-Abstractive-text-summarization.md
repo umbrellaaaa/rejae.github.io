@@ -50,3 +50,33 @@ of this task **in Section 7**.
 
 - To test the effectiveness of this approach we run extensive comparisons with multiple abstractive and extractive baselines, including traditional syntax-based systems, integer linear programconstrained systems, information-retrieval style approaches, as well as statistical phrase-based machine translation.
 - **Section 8** describes the results of these experiments. Our approach outperforms a machine translation system trained on the same large-scale dataset and yields a large improvement over the highest scoring system in the DUC-2004 competition.
+
+## 2. 背景
+<sub></sub>  <sup></sup>
+We begin by defining the sentence summarizationtask. Given an input sentence, the goal is to produce a condensed summary. Let the input consist of a sequence of M words x<sub>1</sub>, . . . , x<sub>M</sub> coming from a fixed vocabulary V of size |V| = V .
+We will represent each word as an indicator vector
+
+x<sub>i</sub> ∈ {0, 1}<sup>V</sup> for i ∈ {1, . . . , M}, 
+
+sentences as a sequence of indicators, and X as the set of possible inputs. Furthermore define the notation x[i,j,k] to indicate the sub-sequence of elements i, j, k.
+A summarizer takes x as input and outputs a shortened sentence y of length N < M. We will assume that the words in the summary also come from the same vocabulary V and that the output is a sequence y1, . . . , yN . Note that in contrast to related tasks, like machine translation, we will assume that the output length N is fixed, and that the system knows the length of the summary before generation.Next consider the problem of generating summaries. Define the set
+
+Y ⊂ ({0, 1}<sup>V</sup> , . . . , <sup>V</sup> ) 
+
+as all possible sentences of length N, i.e. for all i and y ∈ Y, yi is an indicator. We say a system is abstractive if it tries to find the optimal sequence from this set Y,
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126formula1.jpg)
+
+under a scoring function s : X ×Y → R. Contrast this to a fully extractive sentence summary which transfers words from the input:
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126formula2.jpg)
+
+or to the related problem of sentence compression that concentrates on deleting words from the input:
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126formula3.jpg)
+
+While abstractive summarization poses a more difficult generation challenge, the lack of hard constraints gives the system more freedom in generation and allows it to fit with a wider range of training data.
+In this work we focus on factored scoring functions, s, that take into account a fixed window of
+previous words:
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126formula4.jpg)
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126paper1.jpg)
