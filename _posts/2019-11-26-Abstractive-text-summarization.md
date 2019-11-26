@@ -138,9 +138,63 @@ For summarization this model can capture the relative importance of words to dis
 著名历史学家、清华校友何炳棣先生曾在自传《读史阅世六十年》中提及著名数学家林家翘的一句嘱咐：“要紧的是不管搞哪一行，千万不要做第二等的题目。” 具体到每个领域，什么是一等的题目本身见仁见智，其实更指向内心“求真”的态度。
 
 # 3. 实践知识到代码上
-
+将Transformer文本分类代码上传到Github,整理相关文件，后续将添加各类模型。
 
 # 4. 一道leetcode, 几页剑指
+动态规划知识点：
+```python
+#  青蛙跳台阶问题，实际上是一个递归问题，但是也可以从动态规划的角度来解决
+
+#  动态规划，无非就是利用历史记录，来避免我们的重复计算。而这些历史记录，我们得需要一些变量来保存，一般是用一维数组或者二维数组来保存。
+
+#  遵循解题步骤： 1.定义数组元素的意义  2. 找出数组元素之间的关系式  3.找出初始值
+
+# int
+# f(int n ){
+# if (n <= 1)
+# return n;
+
+# // 先创建一个数组来保存历史数据
+# int[]
+# dp = new int[n + 1];
+# // 给出初始值
+# dp[0] = 0;
+# dp[1] = 1;
+# // 通过关系式来计算出 dp[n]
+# for (int i = 2; i <= n; i++){
+#     dp[i] = dp[i-1] + dp[-2];
+# }
+
+# return dp[n];
+
+
+def solution(n_step):
+    f1 = 1
+
+    f = [f1] * n_step  # 构建长度n_step的list,所有值初始化为1
+    for i in range(2, n_step):
+        f[i] = f[i - 1] + f[i - 2]
+
+    return f[n_step-1]
+
+
+print(solution(8))
+
+
+
+
+```
 
 
 # 5. 博客总结一天所学
+今天看了FaceBook的抽象式文本摘要，里面讲述了三个enc，分别是NN,CNN,RNN的语言模型，对输入x和目标y进行编码。
+
+看了知远老师的写出好的论文的想法
+
+看了一点动态规划的东西
+
+调试理解了transformer的encoder部分
+
+运动了半个小时
+
+整理了一下博客，准备系统的学习pytorch和tensorflow。
