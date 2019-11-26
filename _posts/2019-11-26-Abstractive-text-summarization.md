@@ -13,6 +13,8 @@ tags:
 <p id = "build"></p>
 ---
 
+# 每天坚持一篇论文
+
 ## 论文
 抽象式文本摘要：《[A Neural Attention Model for Abstractive Sentence Summarization](https://arxiv.org/pdf/1509.00685.pdf)》date:2019-11-26~27
 
@@ -80,3 +82,45 @@ previous words:
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126formula4.jpg)
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126paper1.jpg)
+
+**即句子x and 窗口y<sub>c</sub>**=映射=>> 下一字y<sub>i+1</sub>
+
+## Model
+The distribution of interest, p(yi+1|x, yc; θ), is a conditional language model based on the input sentence x. Past work on summarization and compression has used a noisy-channel approach to split and independently estimate a language model and a conditional summarization model (Banko et al., 2000; Knight and Marcu, 2002; Daume III and ´ Marcu, 2002), i.e.,
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126f1.jpg)
+where p(y) and p(x|y) are estimated separately.
+Here we instead follow work in neural machine translation and directly parameterize the original distribution as a neural network. The network contains both a neural probabilistic language model and an encoder which acts as a conditional summarization model.
+
+上式中，p(y)和p(x|y)是分开计算的，而我们的网络模型不这样做，新模型依照NMT直接参数化原始分布为一个神经网络，该模型包含一个神经概率语言模型和一个作为条件摘要模型的编码器。
+
+### 3.1 Neural Language Model
+The core of our parameterization is a language model for estimating the contextual probability of
+the next word. The language model is adapted from a standard feed-forward neural network language model (NNLM), particularly the class of NNLMs described by Bengio et al. (2003). The full model is:
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126f2.jpg)
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126f3.jpg)
+
+### 3.2 Encoders
+Note that without the encoder term this represents a standard language model. By incorporating in enc and training the two elements jointly we crucially can incorporate the input text into generation. We discuss next several possible instantiations of the encoder. Bag-of-Words Encoder Our most basic model simply uses the bag-of-words of the input sentence embedded down to size H, while ignoring properties of the original order or relationships between neighboring words. We write this model as:
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126f4.jpg)
+
+For summarization this model can capture the relative importance of words to distinguish content words from stop words or embellishments. Potentially the model can also learn to combine words; although it is inherently limited in representing contiguous phrases.
+
+
+
+
+
+
+
+
+# 2. 扩展NLP知识面
+
+
+# 3. 实践知识到代码上
+
+
+# 4. 一道leetcode, 几页剑指
+
+
+# 5. 博客总结一天所学
