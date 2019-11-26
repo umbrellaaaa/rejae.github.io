@@ -108,6 +108,8 @@ Note that without the encoder term this represents a standard language model. By
 For summarization this model can capture the relative importance of words to distinguish content words from stop words or embellishments. Potentially the model can also learn to combine words; although it is inherently limited in representing contiguous phrases.
 
 
+## 参考
+[paperweekly](https://zhuanlan.zhihu.com/p/21388469)
 
 
 
