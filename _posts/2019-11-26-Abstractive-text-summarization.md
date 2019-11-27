@@ -102,10 +102,27 @@ the next word. The language model is adapted from a standard feed-forward neural
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126f3.jpg)
 
 ### 3.2 Encoders
-Note that without the encoder term this represents a standard language model. By incorporating in enc and training the two elements jointly we crucially can incorporate the input text into generation. We discuss next several possible instantiations of the encoder. Bag-of-Words Encoder Our most basic model simply uses the bag-of-words of the input sentence embedded down to size H, while ignoring properties of the original order or relationships between neighboring words. We write this model as:
+Note that without the encoder term this represents a standard language model. By incorporating in enc and training the two elements jointly we crucially can incorporate the input text into generation. We discuss next several possible instantiations of the encoder. 
+
+**Bag-of-Words Encoder**
+
+ Our most basic model simply uses the bag-of-words of the input sentence embedded down to size H, while ignoring properties of the original order or relationships between neighboring words. We write this model as:
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191126f4.jpg)
 
 For summarization this model can capture the relative importance of words to distinguish content words from stop words or embellishments. Potentially the model can also learn to combine words; although it is inherently limited in representing contiguous phrases.
+词袋模型并不会考虑词序的关系，效果并不会太好，但是作为paper中的一个baseline模型会有很好的对比结果。
+
+**Convolutional Encoder** 
+
+To address some of the modelling issues with bag-of-words we also consider using a deep convolutional encoder for the input sentence. This architecture improves on the bag-of-words model by allowing local interactions between words while also not requiring the context yc while encoding the input. We utilize a standard time-delay neural network (TDNN) architecture,alternating between temporal convolution layers and max pooling layers.
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191127f1.jpg)
+
+其中矩阵F是输入句子的word embedding矩阵，Q包括了一系列过滤层，并且采用了最大池化技术来处理。CNN通过结合word embedding将句子表示成一个matrix，通过不同尺寸的卷积核来filter出句子中的feature，本质上和N-gram一样，N-gram的N就是卷积核的尺寸，构建出多种feature maps，然后max pooling，然后filter，然后pooling，最终采用一个MLP得出结果。
+
+**Attention-Based Encoder** 
+
+While the convolutional encoder has richer capacity than bag-of-words, it still is required to produce a single representation for the entire input sentence. A similar issue in machine translation inspired Bahdanau et al. (2014) to instead utilize an attention-based contextual encoder that constructs a representation based on the generation context. Here we note that if we exploit this context, we can actually use a rather simple model similar to bag-of-words:
 
 
 ## 参考

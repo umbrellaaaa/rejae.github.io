@@ -39,3 +39,7 @@ tags:
 
 《[A Neural Attention Model for Abstractive Sentence Summarization](https://arxiv.org/pdf/1509.00685.pdf)》
 - date:2019-11-26~27
+
+《[Fast Abstractive Summarization with Reinforce-Selected Sentence Rewriting](https://www.aclweb.org/anthology/P18-1063.pdf)》date:2019-11-27~28
+
+《GCN》
