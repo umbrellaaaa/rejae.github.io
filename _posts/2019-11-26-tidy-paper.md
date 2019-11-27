@@ -43,3 +43,11 @@ tags:
 《[Fast Abstractive Summarization with Reinforce-Selected Sentence Rewriting](https://www.aclweb.org/anthology/P18-1063.pdf)》date:2019-11-27~28
 
 《GCN》
+
+## 文本摘要汇总
+
+
+Get To The Point: Summarization with Pointer-Generator Networks结合了Extractive和Abstractive两种方式来做文本摘要
+
+Multi-Source Pointer Network for Product Title Summarization则是偏重Extractive方向
+
