@@ -209,3 +209,8 @@ Pointer network 主要用在解决组合优化类问题(TSP, Convex Hull等等)�
 
 
 # 5. 博客总结一天所学
+- 今天主要是看了seq2seq相关的代码，调试了一个简单的机器翻译，而teacher forcing，attention，beam search需要进一步学习。
+- 整理了一块NLP面试的常见问题集，每天看看并且作答一下。
+- 至于FastText需要掌握，明天学习和调试。
+- 爬虫+验证码+卷积图像识别项目也要慢慢跟进 
+- 文本摘要的Seq2seq明天接着做

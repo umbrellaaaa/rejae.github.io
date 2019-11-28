@@ -46,8 +46,13 @@ tags:
 
 ## 文本摘要汇总
 
-
+https://hongyunyan.github.io/2019/02/20/%E6%89%AB%E6%96%87%E7%AC%94%E8%AE%B02/#more
 Get To The Point: Summarization with Pointer-Generator Networks结合了Extractive和Abstractive两种方式来做文本摘要
 
 Multi-Source Pointer Network for Product Title Summarization则是偏重Extractive方向
 
+
+## 经典Blog
+
+[illustrated-transformer](https://jalammar.github.io/illustrated-transformer/)
+[knowledge-distillation](https://medium.com/neuralmachine/knowledge-distillation-dc241d7c2322)
