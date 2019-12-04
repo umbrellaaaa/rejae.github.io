@@ -42,6 +42,8 @@ tags:
 
 《[Fast Abstractive Summarization with Reinforce-Selected Sentence Rewriting](https://www.aclweb.org/anthology/P18-1063.pdf)》date:2019-11-27~28
 
+《[Recurrent Convolutional Neural Networks for Text Classification](https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/download/9745/9552)》date:2019-11-27~28
+
 《GCN》
 
 ## 文本摘要汇总
@@ -55,4 +57,6 @@ Multi-Source Pointer Network for Product Title Summarization则是偏重Extracti
 ## 经典Blog
 
 [illustrated-transformer](https://jalammar.github.io/illustrated-transformer/)
+
 [knowledge-distillation](https://medium.com/neuralmachine/knowledge-distillation-dc241d7c2322)
+

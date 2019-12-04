@@ -34,6 +34,7 @@ tags:
 21. 循环神经网络和递归神经网络的区别
 22. LSTM结构中C<sub>t</sub>与h<sub>t</sub>的关系是什么？
 23. 自编码器的理解和应用
+24. 线性回归与逻辑回归
 ## 问题解决
 1. 各种优化器：
 SGD:
@@ -164,6 +165,7 @@ r = Dense(output_size, activation='sigmoid')(h)
 autoencoder = Model(input=x, output=r)
 autoencoder.compile(optimizer='adam', loss='mse')
 ```
+
 降噪自编码器：这里不是通过对损失函数施加惩罚项，而是通过改变损失函数的重构误差项来学习一些有用信息。向训练数据加入噪声，并使自编码器学会去除这种噪声来获得没有被噪声污染过的真实输入。因此，这就迫使编码器学习提取最重要的特征并学习输入数据中更加鲁棒的表征，这也是它的泛化能力比一般编码器强的原因。这种结构可以通过梯度下降算法来训练。
 ```python
 x = Input(shape=(28, 28, 1))
@@ -185,3 +187,17 @@ autoencoder = Model(input=x, output=r)
 autoencoder.compile(optimizer='adam', loss='mse')
 ```
 总结本文先介绍了自编码器的基本结构，还研究了许多不同类型的自编码器，如香草、多层、卷积和正则化，通过施加不同约束，包括缩小隐含层的维度和加入惩罚项，使每种自编码器都具有不同属性。
+
+24. 线性回归与逻辑回归
+
+线性回归解析解：
+
+w* =  (X<sup>T</sup>X)<sup>-1</sup>X<sup>T</sup>y
+
+f(x<sub>i</sub>)=x<sub>i</sub><sup>T</sup>w* 
+
+逻辑回归：
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191203173054.png)
+
+参考：[LR](https://zhuanlan.zhihu.com/p/42087746)

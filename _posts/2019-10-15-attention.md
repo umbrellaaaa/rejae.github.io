@@ -21,4 +21,7 @@ Attention机制的本质思想
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191128attentionzjl.jpg)
 
 我们可以这样来看待Attention机制（参考图9）：将Source中的构成元素想象成是由一系列的<Key,Value>数据对构成，此时给定Target中的某个元素Query，通过计算Query和各个Key的相似性或者相关性，得到每个Key对应Value的权重系数，然后对Value进行加权求和，即得到了最终的Attention数值。所以本质上Attention机制是对Source中元素的Value值进行加权求和，而Query和Key用来计算对应Value的权重系数。即可以将其本质思想改写为如下公式：
+
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191128attentionzjl2.jpg)
+
+其中，=||Source||代表Source的长度，公式含义即如上所述。上文所举的机器翻译的例子里，因为在计算Attention的过程中，Source中的Key和Value合二为一，指向的是同一个东西，也即输入句子中每个单词对应的语义编码，所以可能不容易看出这种能够体现本质思想的结构。
