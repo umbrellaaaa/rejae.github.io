@@ -34,7 +34,7 @@ tags:
 21. 循环神经网络和递归神经网络的区别
 22. LSTM结构中C<sub>t</sub>与h<sub>t</sub>的关系是什么？
 23. 自编码器的理解和应用
-24. 线性回归与逻辑回归
+24. 线性回归与逻辑回归以及最大熵模型
 ## 问题解决
 1. 各种优化器：
 SGD:
@@ -201,3 +201,6 @@ f(x<sub>i</sub>)=x<sub>i</sub><sup>T</sup>w*
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191203173054.png)
 
 参考：[LR](https://zhuanlan.zhihu.com/p/42087746)
+
+最大熵模型：
+参考：[ME](https://zhuanlan.zhihu.com/p/41990423)
