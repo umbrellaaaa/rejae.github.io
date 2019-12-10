@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      Seq2seq实践
+title:      Glove & FastText
 subtitle:   
 date:       2019-11-30
 author:     RJ
