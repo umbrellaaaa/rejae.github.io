@@ -119,8 +119,7 @@ Attention层的好处是能够一步到位捕捉到全局的联系，因为它�
 
 [illustrated-transformer](https://jalammar.github.io/illustrated-transformer/)
 
-
-
+[huggingface.co/transformers](https://huggingface.co/transformers/)
 
 
 
@@ -179,6 +178,18 @@ Attention层的好处是能够一步到位捕捉到全局的联系，因为它�
 ```
 
 ## _position_embedding()
+
+pytorch版本
+``` 
+#keep dim 0 for padding token position encoding zero vector
+position_enc = np.array([
+    [pos / np.power(10000, 2*i/d_pos_vec) for i in range(d_pos_vec)]
+    if pos != 0 else np.zeros(d_pos_vec) for pos in range(n_position)])
+
+position_enc[1:, 0::2] = np.sin(position_enc[1:, 0::2]) # dim 2i
+position_enc[1:, 1::2] = np.cos(position_enc[1:, 1::2]) # dim 2i+1
+return torch.from_numpy(position_enc).type(torch.FloatTensor)
+```
 
 ```python
     def _position_embedding(self):
@@ -322,3 +333,24 @@ Attention层的好处是能够一步到位捕捉到全局的联系，因为它�
 
         return outputs
 ```
+
+## 常见问题
+
+请介绍一下自注意力机制？
+
+为什么需要多头注意力？
+
+FF Network在这里起什么作用？
+
+残差连接原理？
+
+Encoder-Decoder分别做了什么？
+
+请描述一个使用transformer的整体流程？
+
+## 整体框架
+
+深入transformer机器翻译项目的流程框架：
+
+1. download data
+2. prepro.py 预处理

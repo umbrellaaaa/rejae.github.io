@@ -42,9 +42,14 @@ tags:
 
 《[Fast Abstractive Summarization with Reinforce-Selected Sentence Rewriting](https://www.aclweb.org/anthology/P18-1063.pdf)》date:2019-11-27~28
 
-《[Recurrent Convolutional Neural Networks for Text Classification](https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/download/9745/9552)》date:2019-11-27~28
+《[Recurrent Convolutional Neural Networks for Text Classification](https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/download/9745/9552)》date:2019-12-3
 
 《GCN》
+
+《201811GAUSSIAN ERROR LINEAR UNITS (GELUS).pdf》
+
+《20199BottleSum_Unsupervised and Self-supervised Sentence Summarization.pdf》
+
 
 ## 文本摘要汇总
 

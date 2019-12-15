@@ -32,7 +32,7 @@ tags:
 其中    node_in = layer_sizes[i]  ; node_out = layer_sizes[i + 1]
 
 
-## MNIST测试初始化效果
+### MNIST测试初始化效果
 
 ```
 '*****************random initialize w************************'
@@ -122,3 +122,75 @@ Accuracy:0.911
 ```
 
 经过对比发现，初始化不同，在20个epoch里，差异是巨大的。随机初始化经过11个epoch才达到xavier初始化第一个epoch的cost, 意味着整整多跑了11个无用的epoch。除此之外，xavier的第二个epoch就超过了随机初始化的精度，这说明了axvier初始化的参数更逼近真实参数。所以，以后你还用tf.random_normal吗？
+
+
+
+## 激活函数
+[机器之心](https://www.jiqizhixin.com/graph/technologies/1697e627-30e7-48a6-b799-39e2338ffab5)
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191214activation.png)
+
+sigmoid
+
+relu
+
+elu FAST AND ACCURATE DEEP NETWORK LEARNING BY EXPONENTIAL LINEAR UNITS (ELUS)
+
+gelu
+
+在激活函数领域，大家公式的鄙视链应该是：Elus > Relu > Sigmoid ，这些激活函数都有自身的缺陷， sigmoid容易饱和，Elus与Relu缺乏随机因素。
+
+在神经网络的建模过程中，模型很重要的性质就是非线性，同时为了模型泛化能力，需要加入随机正则，例如dropout(随机置一些输出为0,其实也是一种变相的随机非线性激活)， 而随机正则与非线性激活是分开的两个事情， 而其实模型的输入是由非线性激活与随机正则两者共同决定的。
+
+GELUs正是在激活中引入了随机正则的思想，是一种对神经元输入的概率描述，直观上更符合自然的认识，同时实验效果要比Relus与ELUs都要好。
+
+什么样的函数能用来做激活函数这里 ?
+
+除了单调性有争议外，其他的目前激活函数大都满足。
+大体说来需要满足：
+- 非线性   
+- 几乎处处可微   
+- 计算简单   
+- 非饱和性   
+- 单调性   
+- 输出范围有限   
+- 接近恒等变换   
+- 参数少   
+- 归一化
+
+
+### GELUs （区别于glue data）
+高斯误差线性单元：
+
+The GELU nonlinearity is the expected transformation of a stochastic regularizer which randomly applies the identity or zero map to a neuron’s input.
+
+The GELU nonlinearity weights inputs by their magnitude, rather than gates inputs by their sign as in ReLUs.
+
+GELUs其实是 dropout、zoneout、Relus的综合，GELUs对于输入乘以一个0,1组成的mask，而该mask的生成则是依概率随机的依赖于输入。假设输入为X, mask为m，则m服从一个伯努利分布(Φ(x)\Phi(x)Φ(x), Φ(x)=P(X&lt;=x),X服从标准正太分布\Phi(x)=P(X&lt;=x), X服从标准正太分布Φ(x)=P(X<=x),X服从标准正太分布)，这么选择是因为神经元的输入趋向于正太分布，这么设定使得当输入x减小的时候，输入会有一个更高的概率被dropout掉，这样的激活变换就会随机依赖于输入了。
+数学表达如下：
+GELU(x)=xP(X&lt;=x)=xΦ(x)GELU(x) = xP(X&lt;=x) = x\Phi(x)
+GELU(x)=xP(X<=x)=xΦ(x)
+
+这里Φ(x)是正太分布的概率函数，可以简单采用正太分布N(0,1), 要是觉得不刺激当然可以使用参数化的正太分布N(μ,σ), 然后通过训练得到μ,σ
+
+对于假设为标准正太分布的GELU(x)GELU(x)GELU(x), 论文中提供了近似计算的数学公式，如下：
+
+GELU(x)=0.5x(1+tanh[2/π−−−√(x+0.044715x3)])
+
+GELU(x) = 0.5x(1+tanh[\sqrt{2/\pi}(x+0.044715x^3)])
+
+GELU(x)=0.5x(1+tanh[ 
+2/π
+​	
+ (x+0.044715x 
+3
+ )])
+
+bert源码中的近似计算更简单:
+
+```python
+def gelu(input_tensor):
+	cdf = 0.5 * (1.0 + tf.erf(input_tensor / tf.sqrt(2.0)))
+	return input_tesnsor*cdf
+
+```

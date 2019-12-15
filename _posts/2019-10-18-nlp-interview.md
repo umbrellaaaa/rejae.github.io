@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      attention 
+title:      NLP 
 subtitle:   summary
 date:       2019-10-18
 author:     RJ
@@ -9,6 +9,11 @@ catalog: true
 tags:
     - NLP
 ---
+
+<p id = "build"></p>
+---
+
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/NLPtask20191214.jpg)
 
 ## 面试问题
 1. 各种优化器(SGD,GD, adam等)
@@ -35,8 +40,14 @@ tags:
 22. LSTM结构中C<sub>t</sub>与h<sub>t</sub>的关系是什么？
 23. 自编码器的理解和应用
 24. 线性回归与逻辑回归以及最大熵模型
+25. Batch N 与 Layer N ？
+
+
+
+
 ## 问题解决
 1. 各种优化器：
+
 SGD:
 
 GD:
@@ -44,6 +55,28 @@ GD:
 adam:
 
 
+2. 各种激活函数
+
+一般激活函数有如下一些性质：
+- 非线性：  当激活函数是线性的，一个两层的神经网络就可以基本上逼近所有的函数。但如果激活函数是恒等激活函数的时候，即f(x)=x，就不满足这个性质，而且如果MLP使用的是恒等激活函数，那么其实整个网络跟单层神经网络是等价的；
+- 可微性：  当优化方法是基于梯度的时候，就体现了该性质；
+- 单调性：  当激活函数是单调的时候，单层网络能够保证是凸函数；
+- f(x)≈x：  当激活函数满足这个性质的时候，如果参数的初始化是随机的较小值，那么神经网络的训练将会很高效；如果不满足这个性质，那么就需要详细地去设置初始值；
+- 输出值的范围：  当激活函数输出值是有限的时候，基于梯度的优化方法会更加稳定，因为特征的表示受有限权值的影响更显著；当激活函数的输出是无限的时候，模型的训练会更加高效，不过在这种情况小，一般需要更小的Learning Rate。
+
+
+sigmoid: pass
+
+relu: pass
+
+gelu:  
+
+In all, the activation choice has remained a necessary architecture decision for neural networks lest the network be a deep linear classifier. 激活函数结构的必要性在于使神经网络不会成为一个深度线性分类器。即激活函数使得神经网络具有非线性特点。
+
+
+3. 梯度消失/爆炸为什么出现，以及怎样解决？
+
+()[https://zhuanlan.zhihu.com/p/28687529]
 
 
 21. 循环神经网络和递归神经网络的区别
