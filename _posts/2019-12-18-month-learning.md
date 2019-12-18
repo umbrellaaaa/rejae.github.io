@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      work day1
+title:      November work
 subtitle:   
 date:       2019-12-31
 author:     RJ
