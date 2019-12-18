@@ -14,13 +14,13 @@ tags:
 
 ## 月度学习内容
 
-## Transformer
+## 1.Transformer
 
 
 
 
 
-## 价值问题
+### 价值问题
 1.  why we add(e,pe) but not concat(e,pe)?
 [tensor2tensor/issues/1591](https://github.com/tensorflow/tensor2tensor/issues/1591)
 [参考](https://www.zhihu.com/question/350116316/answer/860242432)
