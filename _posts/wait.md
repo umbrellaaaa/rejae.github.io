@@ -83,3 +83,7 @@ tags:
 
 ## 后记
 希望我能真正的成长起来。
+
+## 资料
+
+[https://pypi.org](https://pypi.org)

@@ -33,3 +33,22 @@ nvidia-smi
 
 - yum -y install wget
 - wget -c http://www.openslr.org/resources/18/data_thchs30.tgz
+
+
+## 文件操作
+
+unzip filename.zip
+
+filename.tar.gz的解压:   tar -zxvf filename.tar.gz
+
+z: 　　gzip  　　　　　　　　    压缩格式
+
+x: 　　extract　　　　　　　　  解压
+
+v:　　 verbose　　　　　　　　详细信息
+
+f: 　　file(file=archieve)　　　　文件
+
+filename.tar.bz2的解压:  tar -jxvf filename.tar.bz2
+
+j: 　　bzip2　　　　　　　　　 压缩格式

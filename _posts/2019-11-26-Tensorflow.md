@@ -15,6 +15,24 @@ tags:
 ## For what? 
 记录Tensorflow的用法, 从源代码学习编程方法。
 
+## tf.reduce_sum 维度缩减
+
+```python
+
+import tensorflow as tf
+import tensorflow.contrib.eager as tfe
+
+tfe.enable_eager_execution()
+a = [
+    [1, 2, 3],
+    [4, 5, 6]
+]
+b = tf.reduce_sum(a, axis=-1)
+print(b)
+得到:
+[6,15]
+```
+
 ## tf.tile 维度扩展
 
 ```python
@@ -125,4 +143,38 @@ def get_checkpoint_id_list(path):
 for item in id_list:
     sess = deep_koopman.sess
     deep_koopman.saver.restore(sess, 'models/'+item)
+```
+
+## Transformer代码
+
+注意Q,K,V都是输入input_x， 三者经过dense返回经过权重矩阵x*W 的结果，Q_, K_, V_, 我们使用这Q_,K_矩阵计算相似度, 再与V_计算。也即是输入经过同维线性变换后，进行相似度计算。
+```python
+import tensorflow as tf
+import tensorflow.contrib.eager as tfe
+
+tfe.enable_eager_execution()
+
+num_heads = 8
+a = [
+    [[0, 0], [2, 2], [3, 3]],
+    [[4, 4], [5, 5], [6, 6]]
+]
+b = tf.reduce_sum(a, axis=-1)
+print(b)
+c = tf.abs(tf.reduce_sum(a, axis=-1))
+print(c)
+d = tf.sign(tf.abs(tf.reduce_sum(a, axis=-1)))
+print(d)
+
+
+key_masks = tf.tile(d, [num_heads, 1]) # (h*N, T_k)
+
+key_masks = tf.tile(tf.expand_dims(key_masks, 1), [1, tf.shape(a)[1], 1]) # (h*N, T_q, T_k)
+
+print(key_masks)
+
+# outputs = tf.matmul(Q_, tf.transpose(K_, [0, 2, 1]))  # (h*N, T_q, T_k)
+# paddings = tf.ones_like(outputs) * (-2 ** 32 + 1)
+
+outputs = tf.where(tf.equal(key_masks, 0), paddings, outputs)  # (h*N, T_q, T_k)
 ```
