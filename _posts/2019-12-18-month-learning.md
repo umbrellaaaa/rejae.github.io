@@ -81,16 +81,8 @@ I guess this could work if you are using an input-dropout-hidden layer model as 
 针对emb,将最后embedding_size一维reduce_sum,emb的shape就转为[batch,seq], 将batch维度tile成multi_head的倍数，这样相当于[batch,(w1,w2,...,wn)]其中由于sign将w1,w2,...替换成了1，0，-1，当wi是[PAD]时候，wi被padding。key mask就是为了不受 补全短句的positional encoding的影响。 query mask只需要变换一下维度直接与keymask对应相乘就好了。
 ```
 
-<<<<<<< HEAD
 
-## Linux
 
-1. jupyter一直在后台运行，而且开启了多个，怎么解决？
-
-ps -aux | grep jupyter 查看运行的jupyter进程
-
-jupyter notebook list  查看所有连接，本地打开连接，点击quit，结束jupyter任务
-=======
 4. FFNN的作用？
 
 
@@ -112,4 +104,41 @@ jupyter notebook list  查看所有连接，本地打开连接，点击quit，�
 ## 3. 回顾NLP历史 温故而知新
 [A Primer on Neural Network Models for Natural Language Processing](https://arxiv.org/pdf/1510.00726.pdf)
 
->>>>>>> d52e0ea93e26bf10443f7b72ae28e2835fdb0600
+
+
+
+## 环境搭建
+
+1. putty
+2. winscp
+3. 环境配置
+
+conda install -c <channel> <software>  example:  conda install -c <channel> <software>
+
+conda install ipykernel
+
+source activate 环境名称
+
+python -m ipykernel install --user --name 环境名称 --display-name "Python (环境名称)"
+
+
+
+start_jupyter.sh
+
+nohup jupyter notebook --ip=192.168.100.76 --allow-root &
+
+http://192.168.100.xxx:8889/?token=xxx
+
+
+[服务器外部jupyter访问](https://blog.csdn.net/mmc2015/article/details/52439212)
+
+
+
+
+## Linux
+
+1. jupyter一直在后台运行，而且开启了多个，怎么解决？
+
+ps -aux | grep jupyter 查看运行的jupyter进程
+
+jupyter notebook list  查看所有连接，本地打开连接，点击quit，结束jupyter任务
