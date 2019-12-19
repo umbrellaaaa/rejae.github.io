@@ -20,6 +20,7 @@ tags:
 
 
 
+
 ### 价值问题
 1.  why we add(e,pe) but not concat(e,pe)?
 [tensor2tensor/issues/1591](https://github.com/tensorflow/tensor2tensor/issues/1591)
@@ -80,6 +81,7 @@ I guess this could work if you are using an input-dropout-hidden layer model as 
 针对emb,将最后embedding_size一维reduce_sum,emb的shape就转为[batch,seq], 将batch维度tile成multi_head的倍数，这样相当于[batch,(w1,w2,...,wn)]其中由于sign将w1,w2,...替换成了1，0，-1，当wi是[PAD]时候，wi被padding。key mask就是为了不受 补全短句的positional encoding的影响。 query mask只需要变换一下维度直接与keymask对应相乘就好了。
 ```
 
+<<<<<<< HEAD
 
 ## Linux
 
@@ -88,3 +90,26 @@ I guess this could work if you are using an input-dropout-hidden layer model as 
 ps -aux | grep jupyter 查看运行的jupyter进程
 
 jupyter notebook list  查看所有连接，本地打开连接，点击quit，结束jupyter任务
+=======
+4. FFNN的作用？
+
+
+
+
+
+
+## 2. Seven Applications of Deep Learning for Natural Language Processing
+[Jason Brownlee 7 NLP application](https://machinelearningmastery.com/applications-of-deep-learning-for-natural-language-processing/)
+
+1. Text Classification
+2. Language Modeling
+3. Speech Recognition
+4. Caption Generation
+5. Machine Translation
+6. Document Summarization
+7. Question Answering
+
+## 3. 回顾NLP历史 温故而知新
+[A Primer on Neural Network Models for Natural Language Processing](https://arxiv.org/pdf/1510.00726.pdf)
+
+>>>>>>> d52e0ea93e26bf10443f7b72ae28e2835fdb0600
