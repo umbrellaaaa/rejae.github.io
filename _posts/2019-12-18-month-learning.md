@@ -121,6 +121,9 @@ source activate 环境名称
 
 python -m ipykernel install --user --name 环境名称 --display-name "Python (环境名称)"
 
+jupyter kernelspec list
+
+jupyter kernelspec remove z1  
 
 
 start_jupyter.sh
@@ -142,3 +145,15 @@ http://192.168.100.xxx:8889/?token=xxx
 ps -aux | grep jupyter 查看运行的jupyter进程
 
 jupyter notebook list  查看所有连接，本地打开连接，点击quit，结束jupyter任务
+
+cat /proc/driver/nvidia/version
+
+NVRM version: NVIDIA UNIX x86_64 Kernel Module  384.69  Wed Aug 16 19:34:54 PDT 2017
+
+GCC version:  gcc 版本 4.8.5 20150623 (Red Hat 4.8.5-16) (GCC)
+
+nvcc --version   Cuda compilation tools, release 8.0, V8.0.61
+
+[cudatoolkit 太高](https://zhuanlan.zhihu.com/p/64376059)
+
+[tf_version cuda cudnn](https://blog.csdn.net/qq_27825451/article/details/89082978)
