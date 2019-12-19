@@ -79,3 +79,12 @@ I guess this could work if you are using an input-dropout-hidden layer model as 
 
 针对emb,将最后embedding_size一维reduce_sum,emb的shape就转为[batch,seq], 将batch维度tile成multi_head的倍数，这样相当于[batch,(w1,w2,...,wn)]其中由于sign将w1,w2,...替换成了1，0，-1，当wi是[PAD]时候，wi被padding。key mask就是为了不受 补全短句的positional encoding的影响。 query mask只需要变换一下维度直接与keymask对应相乘就好了。
 ```
+
+
+## Linux
+
+1. jupyter一直在后台运行，而且开启了多个，怎么解决？
+
+ps -aux | grep jupyter 查看运行的jupyter进程
+
+jupyter notebook list  查看所有连接，本地打开连接，点击quit，结束jupyter任务
