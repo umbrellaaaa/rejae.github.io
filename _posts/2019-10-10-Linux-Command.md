@@ -31,6 +31,8 @@ kill -9 具体的PID
  
 nvidia-smi
 
+watch -n 10 nvidia-smi
+
 - yum -y install wget
 - wget -c http://www.openslr.org/resources/18/data_thchs30.tgz
 
@@ -55,3 +57,5 @@ j: 　　bzip2　　　　　　　　　 压缩格式
 
 
 rm -rf 目录名字  -r 就是向下递归，不管有多少级目录，一并删除   -f 就是直接强行删除，不作任何提示的意思
+
+[file operation](https://blog.csdn.net/linjpg/article/details/77854671)
