@@ -122,7 +122,7 @@ Attention层的好处是能够一步到位捕捉到全局的联系，因为它�
 [huggingface.co/transformers](https://huggingface.co/transformers/)
 
 
-
+[mc.ai](https://mc.ai/transformer-architecture-attention-is-all-you-need-2/)
 
 
 
@@ -334,6 +334,296 @@ return torch.from_numpy(position_enc).type(torch.FloatTensor)
         return outputs
 ```
 
+## pytorch Transformer
+
+```python
+## AI算法基本流程：
+
+1. 数据准备 & 预处理  ==>>  trian  val  test  文件
+2. 配置文件 hparams.py
+3. 模型组件 modules.py 相应核心方法
+4. 模型构建 models.py Transformer/CNN/RNN
+5. 工具方法 utils.py
+6. 模型训练 train.py 
+
+------------------------------------------------------------------------
+
+### 配置文件 hparams.py
+```python
+import argparse
+
+class Hparams:
+    parser = argparse.ArgumentParser()
+
+    # prepro
+    parser.add_argument('--vocab_size', default=32000, type=int)
+
+    # train
+    ## files
+    parser.add_argument('--train1', default='iwslt2016/segmented/train.de.bpe',
+                             help="german training segmented data")
+    parser.add_argument('--train2', default='iwslt2016/segmented/train.en.bpe',
+                             help="english training segmented data")
+    parser.add_argument('--eval1', default='iwslt2016/segmented/eval.de.bpe',
+                             help="german evaluation segmented data")
+    parser.add_argument('--eval2', default='iwslt2016/segmented/eval.en.bpe',
+                             help="english evaluation segmented data")
+    parser.add_argument('--eval3', default='iwslt2016/prepro/eval.en',
+                             help="english evaluation unsegmented data")
+
+    ## vocabulary
+    parser.add_argument('--vocab', default='iwslt2016/segmented/bpe.vocab',
+                        help="vocabulary file path")
+
+    # training scheme
+    parser.add_argument('--batch_size', default=128, type=int)
+    parser.add_argument('--eval_batch_size', default=128, type=int)
+
+    parser.add_argument('--lr', default=0.0003, type=float, help="learning rate")
+    parser.add_argument('--warmup_steps', default=4000, type=int)
+    parser.add_argument('--logdir', default="log/1", help="log directory")
+    parser.add_argument('--num_epochs', default=20, type=int)
+    parser.add_argument('--evaldir', default="eval/1", help="evaluation dir")
+
+    # model
+    parser.add_argument('--d_model', default=512, type=int,
+                        help="hidden dimension of encoder/decoder")
+    parser.add_argument('--d_ff', default=2048, type=int,
+                        help="hidden dimension of feedforward layer")
+    parser.add_argument('--num_blocks', default=6, type=int,
+                        help="number of encoder/decoder blocks")
+    parser.add_argument('--num_heads', default=8, type=int,
+                        help="number of attention heads")
+    parser.add_argument('--maxlen1', default=100, type=int,
+                        help="maximum length of a source sequence")
+    parser.add_argument('--maxlen2', default=100, type=int,
+                        help="maximum length of a target sequence")
+    parser.add_argument('--dropout_rate', default=0.3, type=float)
+    parser.add_argument('--smoothing', default=0.1, type=float,
+                        help="label smoothing rate")
+
+    # test
+    parser.add_argument('--test1', default='iwslt2016/segmented/test.de.bpe',
+                        help="german test segmented data")
+    parser.add_argument('--test2', default='iwslt2016/prepro/test.en',
+                        help="english test data")
+    parser.add_argument('--ckpt', help="checkpoint file path")
+    parser.add_argument('--test_batch_size', default=128, type=int)
+    parser.add_argument('--testdir', default="test/1", help="test result dir")
+
+--------------------------------------------------------------
+### 模型组件 modules.py 相应核心方法
+
+
+
+
+---------------------------------------------------------------
+### 模型构建 models.py Transformer
+import tensorflow as tf
+
+from data_load import load_vocab
+from modules import get_token_embeddings, ff, positional_encoding, multihead_attention, label_smoothing, noam_scheme
+from utils import convert_idx_to_token_tensor
+from tqdm import tqdm
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+class Transformer:
+    '''
+    xs: tuple of
+        x: int32 tensor. (N, T1)
+        x_seqlens: int32 tensor. (N,)
+        sents1: str tensor. (N,)
+    ys: tuple of
+        decoder_input: int32 tensor. (N, T2)
+        y: int32 tensor. (N, T2)
+        y_seqlen: int32 tensor. (N, )
+        sents2: str tensor. (N,)
+    training: boolean.
+    '''
+    def __init__(self, hp):
+        self.hp = hp
+        self.token2idx, self.idx2token = load_vocab(hp.vocab)
+        self.embeddings = get_token_embeddings(self.hp.vocab_size, self.hp.d_model, zero_pad=True)
+
+    def encode(self, xs, training=True):
+        '''
+        Returns
+        memory: encoder outputs. (N, T1, d_model)
+        '''
+        with tf.variable_scope("encoder", reuse=tf.AUTO_REUSE):
+            x, seqlens, sents1 = xs
+
+            # src_masks
+            src_masks = tf.math.equal(x, 0) # (N, T1)
+
+            # embedding
+            enc = tf.nn.embedding_lookup(self.embeddings, x) # (N, T1, d_model)
+            enc *= self.hp.d_model**0.5 # scale
+
+            enc += positional_encoding(enc, self.hp.maxlen1)
+            enc = tf.layers.dropout(enc, self.hp.dropout_rate, training=training)
+
+            ## Blocks
+            for i in range(self.hp.num_blocks):
+                with tf.variable_scope("num_blocks_{}".format(i), reuse=tf.AUTO_REUSE):
+                    # self-attention
+                    enc = multihead_attention(queries=enc,
+                                              keys=enc,
+                                              values=enc,
+                                              key_masks=src_masks,
+                                              num_heads=self.hp.num_heads,
+                                              dropout_rate=self.hp.dropout_rate,
+                                              training=training,
+                                              causality=False)
+                    # feed forward
+                    enc = ff(enc, num_units=[self.hp.d_ff, self.hp.d_model])
+        memory = enc
+        return memory, sents1, src_masks
+
+    def decode(self, ys, memory, src_masks, training=True):
+        '''
+        memory: encoder outputs. (N, T1, d_model)
+        src_masks: (N, T1)
+
+        Returns
+        logits: (N, T2, V). float32.
+        y_hat: (N, T2). int32
+        y: (N, T2). int32
+        sents2: (N,). string.
+        '''
+        with tf.variable_scope("decoder", reuse=tf.AUTO_REUSE):
+            decoder_inputs, y, seqlens, sents2 = ys
+
+            # tgt_masks
+            tgt_masks = tf.math.equal(decoder_inputs, 0)  # (N, T2)
+
+            # embedding
+            dec = tf.nn.embedding_lookup(self.embeddings, decoder_inputs)  # (N, T2, d_model)
+            dec *= self.hp.d_model ** 0.5  # scale
+
+            dec += positional_encoding(dec, self.hp.maxlen2)
+            dec = tf.layers.dropout(dec, self.hp.dropout_rate, training=training)
+
+            # Blocks
+            for i in range(self.hp.num_blocks):
+                with tf.variable_scope("num_blocks_{}".format(i), reuse=tf.AUTO_REUSE):
+                    # Masked self-attention (Note that causality is True at this time)
+                    dec = multihead_attention(queries=dec,
+                                              keys=dec,
+                                              values=dec,
+                                              key_masks=tgt_masks,
+                                              num_heads=self.hp.num_heads,
+                                              dropout_rate=self.hp.dropout_rate,
+                                              training=training,
+                                              causality=True,
+                                              scope="self_attention")
+
+                    # Vanilla attention
+                    dec = multihead_attention(queries=dec,
+                                              keys=memory,
+                                              values=memory,
+                                              key_masks=src_masks,
+                                              num_heads=self.hp.num_heads,
+                                              dropout_rate=self.hp.dropout_rate,
+                                              training=training,
+                                              causality=False,
+                                              scope="vanilla_attention")
+                    ### Feed Forward
+                    dec = ff(dec, num_units=[self.hp.d_ff, self.hp.d_model])
+
+        # Final linear projection (embedding weights are shared)
+        weights = tf.transpose(self.embeddings) # (d_model, vocab_size)
+        logits = tf.einsum('ntd,dk->ntk', dec, weights) # (N, T2, vocab_size)
+        y_hat = tf.to_int32(tf.argmax(logits, axis=-1))
+
+        return logits, y_hat, y, sents2
+
+    def train(self, xs, ys):
+        '''
+        Returns
+        loss: scalar.
+        train_op: training operation
+        global_step: scalar.
+        summaries: training summary node
+        '''
+        # forward
+        memory, sents1, src_masks = self.encode(xs)
+        logits, preds, y, sents2 = self.decode(ys, memory, src_masks)
+
+        # train scheme
+        y_ = label_smoothing(tf.one_hot(y, depth=self.hp.vocab_size))
+        ce = tf.nn.softmax_cross_entropy_with_logits_v2(logits=logits, labels=y_)
+        nonpadding = tf.to_float(tf.not_equal(y, self.token2idx["<pad>"]))  # 0: <pad>
+        loss = tf.reduce_sum(ce * nonpadding) / (tf.reduce_sum(nonpadding) + 1e-7)
+
+        global_step = tf.train.get_or_create_global_step()
+        lr = noam_scheme(self.hp.lr, global_step, self.hp.warmup_steps)
+        optimizer = tf.train.AdamOptimizer(lr)
+        train_op = optimizer.minimize(loss, global_step=global_step)
+
+        tf.summary.scalar('lr', lr)
+        tf.summary.scalar("loss", loss)
+        tf.summary.scalar("global_step", global_step)
+
+        summaries = tf.summary.merge_all()
+
+        return loss, train_op, global_step, summaries
+
+    def eval(self, xs, ys):
+        '''Predicts autoregressively
+        At inference, input ys is ignored.
+        Returns
+        y_hat: (N, T2)
+        '''
+        decoder_inputs, y, y_seqlen, sents2 = ys
+
+        decoder_inputs = tf.ones((tf.shape(xs[0])[0], 1), tf.int32) * self.token2idx["<s>"]
+        ys = (decoder_inputs, y, y_seqlen, sents2)
+
+        memory, sents1, src_masks = self.encode(xs, False)
+
+        logging.info("Inference graph is being built. Please be patient.")
+        for _ in tqdm(range(self.hp.maxlen2)):
+            logits, y_hat, y, sents2 = self.decode(ys, memory, src_masks, False)
+            if tf.reduce_sum(y_hat, 1) == self.token2idx["<pad>"]: break
+
+            _decoder_inputs = tf.concat((decoder_inputs, y_hat), 1)
+            ys = (_decoder_inputs, y, y_seqlen, sents2)
+
+        # monitor a random sample
+        n = tf.random_uniform((), 0, tf.shape(y_hat)[0]-1, tf.int32)
+        sent1 = sents1[n]
+        pred = convert_idx_to_token_tensor(y_hat[n], self.idx2token)
+        sent2 = sents2[n]
+
+        tf.summary.text("sent1", sent1)
+        tf.summary.text("pred", pred)
+        tf.summary.text("sent2", sent2)
+        summaries = tf.summary.merge_all()
+
+        return y_hat, summaries
+
+
+```
+
+utils.py中相应的保存超参数的方法：
+```python
+def save_hparams(hparams, path):
+    if not os.path.exists(path): os.makedirs(path)
+    hp = json.dumps(vars(hparams))
+    with open(os.path.join(path, "hparams"), 'w') as fout:
+        fout.write(hp)
+```
+
+
+
+
+
+```
+
+
 ## 常见问题
 
 请介绍一下自注意力机制？
@@ -354,3 +644,5 @@ Encoder-Decoder分别做了什么？
 
 1. download data
 2. prepro.py 预处理
+
+```
