@@ -62,6 +62,13 @@ keyMasks = tf.tile(tf.expand_dims(keyMasks, 1), [1, tf.shape(queries)[1], 1])
 maskedSimilary = tf.where(tf.equal(keyMasks, 0), paddings,scaledSimilary)  
 ```
 
+## 静态和动态维度
+[reference](https://www.jianshu.com/p/75a903a44cf2)
+- 使用tf.get_shape()获取静态维度
+- 使用tf.shape获取动态维度
+
+如果你的placeholder输入的维度都是固定的情况下，使用get_shape()。但是很多情况下，我们希望想训练得到的网络可以用于任意大小的图像，这时你的placeholder就的输入维度都是[None,None,None,color_dim]这样的，在这种情况下，后续网络中如果需要得到tensor的维度，则需要使用tf.shape。
+
 ## 模型保存相关
 
 初始化saver
