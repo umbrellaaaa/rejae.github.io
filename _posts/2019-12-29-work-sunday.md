@@ -137,7 +137,22 @@ Test:
 
 ```python
 def gelu(input_tensor):
-	cdf = 0.5 * (1.0 + tf.erf(input_tensor / tf.sqrt(2.0)))
-	return input_tesnsor*cdf
+    cdf = 0.5 * (1.0 + tf.erf(input_tensor / tf.sqrt(2.0)))
+    return input_tensor*cdf
+```
 
 ```
+batch  3582 : average loss =  2.1000651819883727 average acc =  0.7517210683818928
+batch  3582 : average loss =  1.7156402128297368 average acc =  0.8418540451087888
+batch  3582 : average loss =  1.6236123284691708 average acc =  0.8752789480564349
+batch  3582 : average loss =  1.5671721395917593 average acc =  0.8955975202367613
+batch  3582 : average loss =  1.5279843084175004 average acc =  0.9084013056834961
+```
+
+Test:
+```
+词错误率： 0.14221352550947358
+```
+
+Test结果差别不大，待进一步了解gelu的应用场景和多轮epoch以及更大的训练数据测试激活函数。
+
