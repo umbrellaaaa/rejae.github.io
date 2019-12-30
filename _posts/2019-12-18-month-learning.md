@@ -16,6 +16,7 @@ tags:
 
 ## 1.Transformer
 
+[理解transformer模型](https://www.tensorflow.org/tutorials/text/transformer#optimizer)
 
 
 
