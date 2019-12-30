@@ -158,3 +158,16 @@ nvcc --version   Cuda compilation tools, release 8.0, V8.0.61
 [cudatoolkit 太高](https://zhuanlan.zhihu.com/p/64376059)
 
 [tf_version cuda cudnn](https://blog.csdn.net/qq_27825451/article/details/89082978)
+
+
+
+
+## code 
+
+warm up start:
+```
+    global_step = tf.train.get_or_create_global_step()
+    lr = noam_scheme(self.hp.lr, global_step, self.hp.warmup_steps)
+    optimizer = tf.train.AdamOptimizer(lr)
+    train_op = optimizer.minimize(loss, global_step=global_step)
+```

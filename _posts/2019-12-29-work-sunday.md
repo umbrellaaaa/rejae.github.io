@@ -96,7 +96,7 @@ Test:
 词错误率： 0.14045721376413878
 ```
 
-### 原embedding的5个epoch结果：
+### 项目代码 embedding position_encoding的5个epoch结果：
 
 ```
 batch  3582 : average loss =  2.05024021046683 average acc =  0.764345135698935
@@ -115,7 +115,7 @@ Test
 
 
 ## multi_head_attention
-二者的实现方式相同，区别在于input原项目代码采用的是embedding作为输入，而transformer代码采用的是原input[ None, None]作为输入，其中的mask就有一定的区别，比如input输入需要tile一个embedding_size的维度。
+二者的实现方式大致相同，区别在于input原项目代码采用的是embedding作为输入，而transformer代码采用的是原input[ None, None]作为输入，其中的mask就有一定的区别，比如input输入需要tile一个embedding_size的维度。
 
 ## 接下来就是每个block接FFNN了
 ```
@@ -154,5 +154,7 @@ Test:
 词错误率： 0.14221352550947358
 ```
 
-Test结果差别不大，待进一步了解gelu的应用场景和多轮epoch以及更大的训练数据测试激活函数。
+和之前relu的Test结果0.14045721376413878，差别不大，待进一步了解gelu的应用场景和多轮epoch以及更大的训练数据测试激活函数。
+
+纠正： 由于只改变了FFNN中的activation， 而multihead_attention中的Q,K,V三个dense layer的activation都未改动，导致对比差异不大。经过纠正后，gelu激活效果明显优于relu激活，具体见workday11.
 
