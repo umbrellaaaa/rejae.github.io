@@ -160,6 +160,24 @@ nvcc --version   Cuda compilation tools, release 8.0, V8.0.61
 [tf_version cuda cudnn](https://blog.csdn.net/qq_27825451/article/details/89082978)
 
 
+linux复制指定目录下的全部文件到另一个目录中，linux cp 文件夹
+linux复制指定目录下的全部文件到另一个目录中
+复制指定目录下的全部文件到另一个目录中
+文件及目录的复制是经常要用到的。linux下进行复制的命令为cp。
+假设复制源目录 为 dir1 ,目标目录为dir2。怎样才能将dir1下所有文件复制到dir2下了
+如果dir2目录不存在，则可以直接使用
+cp -r dir1 dir2
+即可。
+如果dir2目录已存在，则需要使用
+cp -r dir1/. dir2
+如果这时使用cp -r dir1 dir2,则也会将dir1目录复制到dir2中，明显不符合要求。
+ps:dir1、dir2改成对应的目录路径即可。
+
+cp -r /home/www/xxx/statics/. /home/www/statics
+如果存在文件需要先删除
+rm -rf /home/www/statics/*
+否则会一个个文件提示你确认，使用cp -rf 也一样提示
+
 
 
 ## code 
