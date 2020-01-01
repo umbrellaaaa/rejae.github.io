@@ -46,9 +46,9 @@ tags:
 
 《GCN》
 
-《201811GAUSSIAN ERROR LINEAR UNITS (GELUS).pdf》
+《2018-11-GAUSSIAN ERROR LINEAR UNITS (GELUS).pdf》
 
-《20199BottleSum_Unsupervised and Self-supervised Sentence Summarization.pdf》
+《2019-9-BottleSum Unsupervised and Self-supervised Sentence Summarization.pdf》
 
 
 ## 文本摘要汇总
