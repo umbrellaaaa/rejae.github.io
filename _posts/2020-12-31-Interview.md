@@ -117,3 +117,5 @@ len==2 if s[0]==s[1] return s  else return None
 定义关系： dp[i] == dp[j]; if j-i  >1: i++,j-- ; dp[i]==dp[j]   j-i+1为回文长度
 
 定义初值： dp[0]=0, dp[i]=i
+
+由 s, dp[len(s)], dp[i]存储s[i]为中心，两边对称的最长回文。
