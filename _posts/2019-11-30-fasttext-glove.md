@@ -25,7 +25,7 @@ GloVe模型就是将这两中特征合并到一起的，即使用了语料库的
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191130gloveexaminaion.jpg)
 
-
+(glove 训练自己的语料)[https://blog.csdn.net/imsuhxz/article/details/87798501]
 
 
 
