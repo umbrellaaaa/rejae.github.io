@@ -26,4 +26,4 @@ Recent works in this area attempt to rectify this disjoint training problem and 
 CTC uses intermediate label representation allowing repetitions of labels and occurrences of blank
 label to identify less informative frames, which enables CTCbased acoustic models to automatically learn the alignments between speech frames and target labels.
 
-attention based models use an attention mechanism to perform alignment between acoustic frames and recognized symbols. 
+Attention based models use an attention mechanism to perform alignment between acoustic frames and recognized symbols. 

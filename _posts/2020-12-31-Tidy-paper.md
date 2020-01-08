@@ -65,3 +65,9 @@ Multi-Source Pointer Network for Product Title Summarization则是偏重Extracti
 
 [knowledge-distillation](https://medium.com/neuralmachine/knowledge-distillation-dc241d7c2322)
 
+
+
+
+## 同步更新论文
+
+![爱可可](https://github.com/fly51fly/aicoco/issues)
