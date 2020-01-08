@@ -1,0 +1,188 @@
+Using TensorFlow backend.
+WARNING:tensorflow:
+The TensorFlow contrib module will not be included in TensorFlow 2.0.
+For more information, please see:
+  * https://github.com/tensorflow/community/blob/master/rfcs/20180907-contrib-sunset.md
+  * https://github.com/tensorflow/addons
+get source list...
+  * https://github.com/tensorflow/io (for I/O related ops)
+If you depend on functionality not listed there, please file an issue.
+load  thchs_train.txt  data...
+
+  0%|          | 0/10000 [00:00<?, ?it/s]load  aishell_train.txt  data...
+100%|██████████| 10000/10000 [00:00<00:00, 294655.56it/s]
+ 92%|█████████▏| 110612/120098 [00:00<00:00, 319943.33it/s]load  prime.txt  data...
+100%|██████████| 120098/120098 [00:00<00:00, 375138.07it/s]
+ 62%|██████▏   | 31808/50902 [00:00<00:00, 157108.65it/s]load  stcmd.txt  data...
+100%|██████████| 50902/50902 [00:00<00:00, 200938.22it/s]
+100%|██████████| 102600/102600 [00:00<00:00, 292461.59it/s]
+100%|██████████| 10/10 [00:00<?, ?it/s]
+100%|██████████| 10/10 [00:00<?, ?it/s]
+  0%|          | 0/10 [00:00<?, ?it/s]make am vocab...
+100%|██████████| 10/10 [00:00<00:00, 10031.82it/s]
+make lm pinyin vocab...
+make lm hanzi vocab...
+2019-12-17 21:47:34.745001: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX AVX2
+2019-12-17 21:47:34.748138: I tensorflow/stream_executor/platform/default/dso_loader.cc:42] Successfully opened dynamic library nvcuda.dll
+2019-12-17 21:47:34.908544: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: GeForce GTX 1660 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.77
+pciBusID: 0000:01:00.0
+2019-12-17 21:47:34.915779: I tensorflow/stream_executor/platform/default/dlopen_checker_stub.cc:25] GPU libraries are statically linked, skip dlopen check.
+2019-12-17 21:47:34.916584: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2019-12-17 21:47:36.941218: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-12-17 21:47:36.941527: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2019-12-17 21:47:36.941716: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2019-12-17 21:47:36.957370: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 4639 MB memory) -> physical GPU (device: 0, name: GeForce GTX 1660 Ti, pci bus id: 0000:01:00.0, compute capability: 7.5)
+WARNING:tensorflow:From D:\Anaconda\envs\tensorflow-gpu\lib\site-packages\keras\backend\tensorflow_backend.py:4070: The name tf.nn.max_pool is deprecated. Please use tf.nn.max_pool2d instead.
+
+Model: "model_1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+the_inputs (InputLayer)      (None, None, 200, 1)      0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, None, 200, 32)     320       
+_________________________________________________________________
+batch_normalization_1 (Batch (None, None, 200, 32)     128       
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, None, 200, 32)     9248      
+_________________________________________________________________
+batch_normalization_2 (Batch (None, None, 200, 32)     128       
+_________________________________________________________________
+max_pooling2d_1 (MaxPooling2 (None, None, 100, 32)     0         
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, None, 100, 64)     18496     
+_________________________________________________________________
+batch_normalization_3 (Batch (None, None, 100, 64)     256       
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, None, 100, 64)     36928     
+_________________________________________________________________
+batch_normalization_4 (Batch (None, None, 100, 64)     256       
+_________________________________________________________________
+max_pooling2d_2 (MaxPooling2 (None, None, 50, 64)      0         
+_________________________________________________________________
+conv2d_5 (Conv2D)            (None, None, 50, 128)     73856     
+_________________________________________________________________
+batch_normalization_5 (Batch (None, None, 50, 128)     512       
+_________________________________________________________________
+conv2d_6 (Conv2D)            (None, None, 50, 128)     147584    
+_________________________________________________________________
+batch_normalization_6 (Batch (None, None, 50, 128)     512       
+_________________________________________________________________
+max_pooling2d_3 (MaxPooling2 (None, None, 25, 128)     0         
+_________________________________________________________________
+conv2d_7 (Conv2D)            (None, None, 25, 128)     147584    
+_________________________________________________________________
+batch_normalization_7 (Batch (None, None, 25, 128)     512       
+_________________________________________________________________
+conv2d_8 (Conv2D)            (None, None, 25, 128)     147584    
+_________________________________________________________________
+batch_normalization_8 (Batch (None, None, 25, 128)     512       
+_________________________________________________________________
+conv2d_9 (Conv2D)            (None, None, 25, 128)     147584    
+_________________________________________________________________
+batch_normalization_9 (Batch (None, None, 25, 128)     512       
+_________________________________________________________________
+conv2d_10 (Conv2D)           (None, None, 25, 128)     147584    
+_________________________________________________________________
+batch_normalization_10 (Batc (None, None, 25, 128)     512       
+_________________________________________________________________
+reshape_1 (Reshape)          (None, None, 3200)        0         
+_________________________________________________________________
+dropout_1 (Dropout)          (None, None, 3200)        0         
+_________________________________________________________________
+dense_1 (Dense)              (None, None, 256)         819456    
+_________________________________________________________________
+dropout_2 (Dropout)          (None, None, 256)         0         
+_________________________________________________________________
+dense_2 (Dense)              (None, None, 230)         59110     
+=================================================================
+Total params: 1,759,174
+Trainable params: 1,757,254
+Non-trainable params: 1,920
+_________________________________________________________________
+WARNING:tensorflow:From D:\Anaconda\envs\tensorflow-gpu\lib\site-packages\tensorflow\python\ops\array_ops.py:1354: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where
+loading acoustic model...
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:295: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+loading language model...
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:100: The name tf.variable_scope is deprecated. Please use tf.compat.v1.variable_scope instead.
+
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:101: The name tf.get_variable is deprecated. Please use tf.compat.v1.get_variable instead.
+
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:311: dropout (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use keras.layers.dropout instead.
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:149: dense (from tensorflow.python.layers.core) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use keras.layers.dense instead.
+WARNING:tensorflow:From D:\Anaconda\envs\tensorflow-gpu\lib\site-packages\tensorflow\python\ops\init_ops.py:1251: calling VarianceScaling.__init__ (from tensorflow.python.ops.init_ops) with dtype is deprecated and will be removed in a future version.
+Instructions for updating:
+Call initializer instance with the dtype argument instead of passing it to the constructor
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:228: conv1d (from tensorflow.python.layers.convolutional) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use `tf.keras.layers.Conv1D` instead.
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:331: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use `tf.cast` instead.
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:332: to_float (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use `tf.cast` instead.
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:334: The name tf.summary.scalar is deprecated. Please use tf.compat.v1.summary.scalar instead.
+
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:344: The name tf.train.AdamOptimizer is deprecated. Please use tf.compat.v1.train.AdamOptimizer instead.
+
+WARNING:tensorflow:From E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\model_language\transformer.py:349: The name tf.summary.merge_all is deprecated. Please use tf.compat.v1.summary.merge_all instead.
+
+WARNING:tensorflow:From E:/NLP_Treature/speechLM/DeepSpeechRecognition-master/test.py:33: The name tf.Session is deprecated. Please use tf.compat.v1.Session instead.
+
+2019-12-17 21:47:41.453220: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: GeForce GTX 1660 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.77
+pciBusID: 0000:01:00.0
+2019-12-17 21:47:41.453633: I tensorflow/stream_executor/platform/default/dlopen_checker_stub.cc:25] GPU libraries are statically linked, skip dlopen check.
+2019-12-17 21:47:41.454306: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2019-12-17 21:47:41.460500: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1640] Found device 0 with properties: 
+name: GeForce GTX 1660 Ti major: 7 minor: 5 memoryClockRate(GHz): 1.77
+pciBusID: 0000:01:00.0
+2019-12-17 21:47:41.460908: I tensorflow/stream_executor/platform/default/dlopen_checker_stub.cc:25] GPU libraries are statically linked, skip dlopen check.
+2019-12-17 21:47:41.461564: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1763] Adding visible gpu devices: 0
+2019-12-17 21:47:41.461822: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1181] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-12-17 21:47:41.462107: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1187]      0 
+2019-12-17 21:47:41.462283: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1200] 0:   N 
+2019-12-17 21:47:41.462853: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1326] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 4639 MB memory) -> physical GPU (device: 0, name: GeForce GTX 1660 Ti, pci bus id: 0000:01:00.0, compute capability: 7.5)
+WARNING:tensorflow:From E:/NLP_Treature/speechLM/DeepSpeechRecognition-master/test.py:35: The name tf.train.Saver is deprecated. Please use tf.compat.v1.train.Saver instead.
+
+WARNING:tensorflow:From D:\Anaconda\envs\tensorflow-gpu\lib\site-packages\tensorflow\python\training\saver.py:1276: checkpoint_exists (from tensorflow.python.training.checkpoint_management) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use standard file APIs to check for files with this prefix.
+get source list...
+load  thchs_train.txt  data...
+  0%|          | 0/10000 [00:00<?, ?it/s]load  aishell_train.txt  data...
+100%|██████████| 10000/10000 [00:00<00:00, 294904.17it/s]
+100%|██████████| 120098/120098 [00:00<00:00, 340807.08it/s]
+load  prime.txt  data...
+ 90%|████████▉ | 45697/50902 [00:00<00:00, 138418.39it/s]load  stcmd.txt  data...
+100%|██████████| 50902/50902 [00:00<00:00, 172409.07it/s]
+100%|██████████| 102600/102600 [00:00<00:00, 519567.08it/s]
+100%|██████████| 10/10 [00:00<00:00, 9740.60it/s]
+100%|██████████| 10/10 [00:00<00:00, 10060.70it/s]
+100%|██████████| 10/10 [00:00<00:00, 10003.11it/s]
+make am vocab...
+make lm pinyin vocab...
+make lm hanzi vocab...
+Traceback (most recent call last):
+  File "E:/NLP_Treature/speechLM/DeepSpeechRecognition-master/test.py", line 55, in <module>
+    inputs, _ = next(am_batch)
+  File "E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\utils.py", line 98, in get_am_batch
+    fbank = compute_fbank(self.data_path + self.wav_lst[index])
+  File "E:\NLP_Treature\speechLM\DeepSpeechRecognition-master\utils.py", line 202, in compute_fbank
+
+ the  0 th example.
+    fs, wavsignal = wav.read(file)
+  File "D:\Anaconda\envs\tensorflow-gpu\lib\site-packages\scipy\io\wavfile.py", line 233, in read
+    fid = open(filename, 'rb')
+FileNotFoundError: [Errno 2] No such file or directory: 'data/data_thchs30/train/A11_0.wav'
+
+Process finished with exit code 1

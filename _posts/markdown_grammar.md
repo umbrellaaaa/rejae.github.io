@@ -26,7 +26,8 @@ ____
 >>这是引用的内容
 ___
 ![图片alt](图片地址 ''图片title'')
-![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20191028attention.jpg)
+![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/
+20191028attention.jpg)
 ![blockchain](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/
 u=702257389,1274025419&fm=27&gp=0.jpg "区块链")
 _____
