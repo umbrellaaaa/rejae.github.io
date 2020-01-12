@@ -118,6 +118,8 @@ conda install -c <channel> <software>  example:  conda install -c <channel> <sof
 
 conda install ipykernel
 
+conda remove -n py36 --all
+
 source activate 环境名称
 
 python -m ipykernel install --user --name 环境名称 --display-name "Python (环境名称)"
