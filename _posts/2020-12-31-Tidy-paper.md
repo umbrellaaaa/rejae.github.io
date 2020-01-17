@@ -68,6 +68,25 @@ Multi-Source Pointer Network for Product Title Summarization则是偏重Extracti
 
 
 
-## 同步更新论文
+## 中文纠错论文
 
-![爱可可](https://github.com/fly51fly/aicoco/issues)
+[Chinese Spelling Check Evaluation at SIGHAN Bake-off 2013](https://www.aclweb.org/anthology/W13-4406.pdf)
+
+### 检错与纠错
+A spelling checker should have both capabilities consisting of error detection and error correction. Spelling error detection is to indicate the various types of spelling errors in the text. Spelling error correction is further to suggest the correct characters of detected errors.
+
+For chinese: There are no word delimiters between words and the length of each word is very short. There are several previous studies addressing the Chinese spelling check problem.
+
+### 历史解决方案
+- Chang (1995) has proposed a bi-gram language model to substitute the confusing character for error detection and correction.
+- Zhang et al. (2000) have presented an approximate word-matching algorithm to detect and correct Chinese spelling errors using operations of character substitution, insertion, and deletion.
+- Ren et al. (2001) have proposed a hybrid approach that combines a rule-based method and a probability-based method to automatic Chinese spelling checking.
+- Huang et al.(2007) have proposed a learning model based on Chinese phonemic alphabet for spelling check. 
+- Most of the Chinese spelling errors were originated from phonologically similar, visually similar, and semantically confusing characters (Liu et al., 2011). 
+- Empirically, there were only 2 errors per student essay on average in a learners’ corpus
+(Chen et al., 2011).
+
+How to evaluate the falsealarm rate of a spelling check system with normal corpus was also a hard task (Wu et al., 2010). 
+
+### 近期论文
+[A Hybrid Approach to Automatic Corpus Generation for Chinese Spelling Check](https://www.aclweb.org/anthology/D18-1273.pdf)
