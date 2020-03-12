@@ -90,3 +90,5 @@ How to evaluate the falsealarm rate of a spelling check system with normal corpu
 
 ### 近期论文
 [A Hybrid Approach to Automatic Corpus Generation for Chinese Spelling Check](https://www.aclweb.org/anthology/D18-1273.pdf)
+
+[Faspell](https://www.aclweb.org/anthology/D19-5522.pdf)
