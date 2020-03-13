@@ -72,6 +72,3 @@ https://blog.csdn.net/Y2c8YpZC15p/article/details/81125500?utm_source=blogxgwz1
 conll2014 英文语法纠错综述(有各个小组的论文集合)：
 
 9.The CoNLL-2014 Shared Task on Grammatical Error Correction
-————————————————
-版权声明：本文为CSDN博主「rageidencenovy」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/ltochange/article/details/83310340
