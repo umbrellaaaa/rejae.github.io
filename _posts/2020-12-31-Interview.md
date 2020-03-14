@@ -250,3 +250,62 @@ class Solution(object):
 		return res
 
 ```
+
+### 用Java写算法
+
+```java
+public class TreeNode{
+    int value;
+    TreeNode left;
+    TreeNode right;
+
+    //构造方法
+    TreeNode(int x){
+        value = x
+    }
+}
+
+class Solution {
+    public List < Integer > inorderTraversal(TreeNode root) {
+        List < Integer > res = new ArrayList < > ();
+        helper(root, res);
+        return res;
+    }
+
+    public void helper(TreeNode root, List < Integer > res) {
+        if (root != null) { //两次判断，冗余；直接判断node为null后就return  ;
+            if (root.left != null) {
+                helper(root.left, res);
+            }
+            res.add(root.val);
+            if (root.right != null) {
+                helper(root.right, res);
+            }
+        }
+    }
+}
+```
+
+将python的list创建迁移： List < Integer > res = new ArrayList < > ();
+
+基于栈的二叉树，中序遍历
+```java
+public class Solution {
+    public List < Integer > inorderTraversal(TreeNode root) {
+        List < Integer > res = new ArrayList < > ();
+        Stack < TreeNode > stack = new Stack < > ();
+        TreeNode curr = root;
+        while (curr != null || !stack.isEmpty()) {
+            while (curr != null) {
+                stack.push(curr);
+                curr = curr.left;
+            }
+            curr = stack.pop();
+            res.add(curr.val);
+            curr = curr.right;
+        }
+        return res;
+    }
+}
+
+```
