@@ -100,7 +100,7 @@ public static int uniquePaths(int m, int n) {
 ```
 
 
-### 5. 中等 最长回文子串
+5. 中等 最长回文子串
 首先区别 子串 与 子序列
 
 input = 'abacabaaa'
@@ -119,3 +119,134 @@ len==2 if s[0]==s[1] return s  else return None
 定义初值： dp[0]=0, dp[i]=i
 
 由 s, dp[len(s)], dp[i]存储s[i]为中心，两边对称的最长回文。
+
+42. 接雨水问题
+
+思路： 站在点 i 看 Min(max(A[:i+1]) 和 max(A[i:])) 该位置的接水量，就是这个值减去当前柱子高度。
+```python
+
+public class Solution:
+
+
+    def max_area(arr0):
+        result = 0
+        if len(arr)<=2:
+            return 0
+        for i in range(1,len(arr)-1):
+            result += min(max(arr[:i+1]),max(arr[i:])) - arr[i]
+        
+        return result
+
+
+class Solution:
+    def trap(self, height: List[int]) -> int:
+
+        n = len(height)
+        if n <2: return 0
+        liquid = height[:]
+        for i in range(1,n-1):
+            liquid[i]=min(max(height[:i+1]),max(height[i:]))
+        return sum(liquid)-sum(height)
+```
+step1: 分析变量
+
+数组： arr
+
+变量： i
+
+step2:判断临界条件
+
+if n<=2:
+    return 0
+
+step3:
+
+
+72. 编辑距离
+给定两个单词 word1 和 word2，计算出将 word1 转换成 word2 所使用的最少操作数 。
+
+你可以对一个单词进行如下三种操作：
+
+插入一个字符
+删除一个字符
+替换一个字符
+
+```python
+class Solution:
+    def minDistance(self, word1: str, word2: str) -> int:
+
+```
+思考： A-->>B
+
+A[:i-1] B[:j-1]
+
+A[:i-1] B[:j]
+
+A[:i] B[:j-1]
+```python
+class Solution(object):
+    def minDistance(self, word1, word2):
+        """
+        :type word1: str
+        :type word2: str
+        :rtype: int
+        """
+        n1, n2 = len(word1), len(word2)
+        dp = [[0] * (n2 + 1) for _ in range(n1 + 1)]
+        dp[0][0] = 0
+        for i in range(1, n1 + 1):
+            dp[i][0] = i
+        for j in range(1, n2 + 1):
+            dp[0][j] = j
+            
+        for i in range(1, n1 + 1):
+            for j in range(1, n2 + 1):
+                if word1[i - 1] == word2[j - 1]:
+                    dp[i][j] = dp[i - 1][j - 1]
+                else:
+                    dp[i][j] = min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1
+        return dp[n1][n2]
+```
+
+## 链表问题
+
+206. 反转链表
+```
+class Solution:
+
+    
+    def reverseList(self, head: ListNode) -> ListNode:
+        
+        
+        prev = None
+        cur =head
+        while cur:
+            nextTemp = cur.next # 存储下一节点
+            cur.next = prev # 断开反向重连
+            prev = cur # prev后移一位
+            cur = nextTemp #Cur 后移一位
+        
+        return prev
+```
+
+94. 二叉树中序遍历
+
+```python
+class Solution(object):
+	def inorderTraversal(self, root):
+		"""
+		:type root: TreeNode
+		:rtype: List[int]
+		"""
+		res = []
+		def dfs(root):
+			if not root:
+				return
+			# 按照 左-打印-右的方式遍历	
+			dfs(root.left)
+			res.append(root.val)
+			dfs(root.right)
+		dfs(root)
+		return res
+
+```

@@ -2,7 +2,7 @@
 layout:     post
 title:      Tidy Paper
 subtitle:   
-date:       2019-11-26
+date:       2020-12-31
 author:     RJ
 header-img: 
 catalog: true
@@ -12,6 +12,22 @@ tags:
 ---
 <p id = "build"></p>
 ---
+
+## 论文来源
+
+ACL
+
+知识星球
+
+知乎
+
+文献综述
+
+相关论文的引文
+
+深度学习交流群
+
+微信公众号
 
 ## 论文集
 
@@ -90,3 +106,5 @@ How to evaluate the falsealarm rate of a spelling check system with normal corpu
 
 ### 近期论文
 [A Hybrid Approach to Automatic Corpus Generation for Chinese Spelling Check](https://www.aclweb.org/anthology/D18-1273.pdf)
+
+[Faspell](https://www.aclweb.org/anthology/D19-5522.pdf)
