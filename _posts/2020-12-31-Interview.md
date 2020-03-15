@@ -309,3 +309,105 @@ public class Solution {
 }
 
 ```
+
+15. 三数之和 ： 三指针
+
+```python
+class Solution:
+    def threeSum(self, nums: [int]) -> [[int]]:
+        nums.sort()
+        res, k = [], 0
+        for k in range(len(nums) - 2):
+            if nums[k] > 0: break # 1. because of j > i > k.
+            
+            if k > 0 and nums[k] == nums[k - 1]: continue # 2. skip the same `nums[k]`.
+            i, j = k + 1, len(nums) - 1
+
+            while i < j: # 3. double pointer
+                s = nums[k] + nums[i] + nums[j]
+                if s < 0:
+                    i += 1
+                    while i < j and nums[i] == nums[i - 1]: i += 1
+                elif s > 0:
+                    j -= 1
+                    while i < j and nums[j] == nums[j + 1]: j -= 1
+                else:
+                    res.append([nums[k], nums[i], nums[j]])
+                    i += 1
+                    j -= 1
+                    while i < j and nums[i] == nums[i - 1]: i += 1
+                    while i < j and nums[j] == nums[j + 1]: j -= 1
+        return res
+
+
+```
+
+111. 二叉树的最小深度
+
+注意最小深度为从根节点到最近叶子节点的路径上的节点数
+
+要求从根节点到子树，当左子树或右子树为空时，不符合要求
+```python
+class Solution(object):
+    def minDepth(self, root):
+        if root ==None:
+            return 0
+        if root.left==None and root.right!=None:
+            return self.minDepth(root.right)+1
+        if root.right==None and root.left!=None:
+            return self.minDepth(root.left)+1
+
+        left = self.minDepth(root.left)
+        right = self.minDepth(root.right)
+        return min(left,right)+1
+```
+
+104. 二叉树的最大深度
+
+```python
+class Solution(object):
+    def maxDepth(self, root):
+        if root ==None:
+            return 0
+        left = self.maxDepth(root.left)
+        right = self.maxDepth(root.right)
+        return max(left,right)+1
+```
+
+二叉树所有节点数 与 叶子节点数 对比
+
+```python
+def func(root):
+    if root ==None: return 0
+    left = func(root.left)
+    right = func(root.right)
+    return left+right+1
+```
+
+```python
+def func(root):
+    if root == None: return 0
+    if root.left ==None and root.right ==None:
+        return 1
+    return func(root.left)+func(root.right)
+```
+
+24. 两两交换链表节点
+
+```python
+class Solution(object):
+    def swapPairs(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        ## 1. 终止条件
+        if head ==None or head.next ==None:
+            return head
+        ## 2. 递归核心
+        tail = head.next  #存
+        head.next = self.swapPairs(tail.next) # 下一阶段联系建立
+        tail.next = head # tail指向head
+        ## 3. 返回值
+        return tail
+```
