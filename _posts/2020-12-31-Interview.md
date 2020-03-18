@@ -512,6 +512,146 @@ class Solution(object):
         return result
 ```
 
+169. 数组多数元素
+```python
+class Solution:
+    def majorityElement(self, nums):
+        counts = collections.Counter(nums)
+        return max(counts.keys(), key=counts.get)
+
+class Solution(object):
+    def majorityElement(self, nums):
+        m_dic = dict()
+        for item in nums:
+            if str(item) not in m_dic:
+                m_dic[str(item)]=1
+            else:
+                m_dic[str(item)]+=1
+        # 将字典按值排序，返回键，toint
+        sorted_list = sorted(m_dic.items(),key=lambda x:x[1],reverse=True)
+        #print(sorted_list)
+        return int(sorted_list[0][0])
+```
+
+215. 数组中的第K个最大元素 (快排)
+
+```python
+class Solution(object):
+    def findKthLargest(self, nums, k):
+        start = 0
+        end = len(nums)-1
+        def quick_sort(arr,start,end):
+            if start>=end:
+                return arr
+            index = parition(arr,start,end)
+            quick_sort(arr,start,index-1)
+            quick_sort(arr,index+1,end)
+            return arr
+
+        
+        def parition(arr,start,end):
+            pivot = arr[start]
+            i,j=start,end
+            while i<j :
+
+                while i<j and arr[j]>pivot:
+                    j-=1
+
+                while i<j and arr[i]<=pivot:
+                    i+=1
+                if i<j:
+                    temp = arr[i]
+                    arr[i]=arr[j]
+                    arr[j]=temp
+            arr[start] = arr[i]
+            arr[i] = pivot
+            return i
+
+        arr = quick_sort(nums,start,end)
+        return arr[-k]
+
+
+```
+
+20. 有效的括号
+```python
+class Solution(object):
+    def isValid(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+        while '{}' in s or '()' in s or '[]' in s:
+            s = s.replace('{}', '')
+            s = s.replace('[]', '')
+            s = s.replace('()', '')
+        return s == ''
+```
+栈，解决问题：
+```python
+class Solution(object):
+    def isValid(self, s):
+        """
+        :type s: str
+        :rtype: bool
+        """
+
+        # The stack to keep track of opening brackets.
+        stack = []
+
+        # Hash map for keeping track of mappings. This keeps the code very clean.
+        # Also makes adding more types of parenthesis easier
+        mapping = {")": "(", "}": "{", "]": "["}
+
+        # For every bracket in the expression.
+        for char in s:
+
+            # If the character is an closing bracket
+            if char in mapping:
+
+                # Pop the topmost element from the stack, if it is non empty
+                # Otherwise assign a dummy value of '#' to the top_element variable
+                top_element = stack.pop() if stack else '#'
+
+                # The mapping for the opening bracket in our hash and the top
+                # element of the stack don't match, return False
+                if mapping[char] != top_element:
+                    return False
+            else:
+                # We have an opening bracket, simply push it onto the stack.
+                stack.append(char)
+
+        # In the end, if the stack is empty, then we have a valid expression.
+        # The stack won't be empty for cases like ((()
+        return not stack
+```
+
+
+
+33. 搜索旋转排序数组
+二分查找，部分有序：
+```python
+class Solution(object):
+    def search(self, nums, target):
+        if not nums : return -1
+        i,j = 0,len(nums)-1
+        while i<=j:
+            mid = (i+j)//2
+            if nums[mid]==target: return mid
+
+            if nums[i]<=nums[mid]:# left
+                if nums[i]<=target<nums[mid]: j=mid-1
+                else: i=mid+1
+
+            else: # right
+                if nums[mid]<target<=nums[j]: i=mid+1
+                else: j=mid-1
+                
+        return -1
+```
+
+
+
 ## 自报家门
 本科专业 软件工程，硕士专业 计算机技术； 研究方向是自然语言处理。
 
