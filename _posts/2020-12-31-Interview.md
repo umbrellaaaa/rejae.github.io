@@ -411,3 +411,116 @@ class Solution(object):
         ## 3. 返回值
         return tail
 ```
+
+10. 正则表达式匹配
+
+s 与 p , 我们遍历p:
+
+```python
+flag = True
+C = [a-zA-Z]
+trans = 0
+for i in range(len(p)):
+    if s[i]==p[i]:
+        continue
+    if p[i] in C and p[i]!=s[i] and flag:
+        return False
+    
+    if p[i]=='.' and p[i+1] != '*':
+        if p[i+1]==s[i]:
+            trans = -1
+    
+    if p[i]=='.' and p[i+1]=='*':
+        p[i+1]
+
+    
+
+```
+11. 最大容积
+```python
+class Solution(object):
+    def maxArea(self, height):
+        result =0 
+        i=0
+        j=len(height)-1
+        while i<j:
+            result = max(min(height[i],height[j])*(j-i),result)
+            if height[i]<height[j]:
+                i+=1
+            else:
+                j-=1
+        return result
+```
+
+21. 合并两个有序链表
+递归解法
+```python
+class Solution:
+    def mergeTwoLists(self, l1, l2):
+        if l1 is None:
+            return l2
+        elif l2 is None:
+            return l1
+        elif l1.val < l2.val:
+            l1.next = self.mergeTwoLists(l1.next, l2)
+            return l1
+        else:
+            l2.next = self.mergeTwoLists(l1, l2.next)
+            return l2
+
+```
+
+70. 爬楼梯
+```python
+    def climbStairs(self, n):
+        # # f(n) = f(n-1)+f(n-2)
+        if n <=2:
+            return n
+        
+        # return self.climbStairs(n-1)+self.climbStairs(n-2)
+        f1 = 1
+        f2 = 2
+        f = 0
+        for i in range(3,n+1):
+            f  = f1+f2
+            f1 = f2
+            f2 = f
+        return f
+```
+
+
+面试题：字符串压缩
+```python
+class Solution(object):
+    def compressString(self, S):
+        ## 终止条件
+        if not S:
+            return ""
+        result = ''
+        save_S = S
+        while S:
+            j=1
+            temp= S[0]
+            count =1
+            while j<len(S) and S[0]==S[j]:
+                count+=1
+                j+=1
+            result+=temp+str(count)
+            S=S[count:]
+        if len(result)>=len(save_S):
+            result=save_S
+        return result
+```
+
+## 自报家门
+本科专业 软件工程，硕士专业 计算机技术； 研究方向是自然语言处理。
+
+研一开始从机器学习入手，然后慢慢过渡到深度学习，后来接触到了自然语言处理，并且身处于NLP高速发展的时期，对NLP很感兴趣并选择了这个方向为自己研究的方向。
+
+
+
+个人的优点是 有较强的时间观念，较强的执行力，较强的探索学习能力，很强的适应能力
+
+缺点要谈的话： 缺少从0到1的项目经验。
+
+
