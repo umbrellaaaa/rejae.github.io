@@ -368,3 +368,6 @@ flag = 5 * confidence + 2 * similarity - 5 > 0
 
 ![](https://raw.githubusercontent.com/rejae/rejae.github.io/master/img/20200203093830.png)
 
+## 继续进行
+
+Bert run_pretraining 357row : name_to_features

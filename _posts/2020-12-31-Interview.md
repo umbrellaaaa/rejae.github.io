@@ -650,6 +650,111 @@ class Solution(object):
         return -1
 ```
 
+43. 字符串相乘
+```
+class Solution:
+    def multiply(self, str1: str, str2: str) -> str:
+        m_dict =dict()
+        for i in range(10):
+            m_dict[str(i)]=i
+
+        result = 0
+        for index_2,item_2 in enumerate(str2):
+            mul_2 = max(10**(len(str2)-index_2-1),1)
+            for index_1, item_1 in enumerate(str1):
+                mul_1 = max(10**(len(str1)-index_1-1),1)
+                result += m_dict[item_2]*mul_2*m_dict[item_1]*mul_1
+
+        return str(result)
+```
+
+54. 螺旋矩阵
+```python
+class Solution(object):
+    def spiralOrder(self, matrix):
+        if not matrix: return []
+        R, C = len(matrix), len(matrix[0])
+        seen = [[False] * C for _ in matrix]
+        ans = []
+        dr = [0, 1, 0, -1]
+        dc = [1, 0, -1, 0]
+        r = c = di = 0
+        for _ in range(R * C):
+            ans.append(matrix[r][c])
+            seen[r][c] = True
+            cr, cc = r + dr[di], c + dc[di]
+            if 0 <= cr < R and 0 <= cc < C and not seen[cr][cc]:
+                r, c = cr, cc
+            else:
+                di = (di + 1) % 4
+                r, c = r + dr[di], c + dc[di]
+        return ans
+```
+
+394. 字符串解码
+
+s = "3[a]2[bc]", 返回 "aaabcbc".
+```python
+class Solution:
+    def decodeString(self, s: str) -> str:
+        stack, res, multi = [], "", 0
+        for c in s:
+            if c == '[':
+                stack.append([multi, res])
+                res, multi = "", 0
+            elif c == ']':
+                cur_multi, last_res = stack.pop()
+                res = last_res + cur_multi * res
+            elif '0' <= c <= '9':
+                multi = multi * 10 + int(c)            
+            else:
+                res += c
+        return res
+```
+
+13. 罗马数字转整数
+
+ 左边小于右边，减这个数，否则加这个数
+```
+class Solution:
+    def romanToInt(self, s: str) -> int:
+        result = 0
+        a = {'I':1, 'V':5, 'X':10, 'L':50, 'C':100, 'D':500, 'M':1000}   
+        
+        for i in range(len(s)):
+            if i<len(s)-1 and  a[s[i]]<a[s[i+1]]:
+                result -= a[s[i]]
+            else:
+                result+=a[s[i]]
+        return result
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## 自报家门
@@ -663,4 +768,24 @@ class Solution(object):
 
 缺点要谈的话： 缺少从0到1的项目经验。
 
+
+# 面试总结
+一方面，宽度和深度的结合比较好，一方面，缺少从0到1的项目。
+
+编程功底有待提升，不只是实现一些方法，更重要的是要掌握整个项目流程，要有从创建实现最后上线的能力。
+
+之前看的论文要多总结，一些面试的常考点必须写进blog.
+
+选定NLP的两个大方向，一直往前慢慢推进就好。比如文本分类，机器翻译。
+
+1. 序列标注：分词/POS Tag/NER/语义标注
+2. 分类任务：文本分类/情感计算
+3. 句子关系判断：Entailment/QA/自然语言推理
+4. 生成式任务：机器翻译/文本摘要
+
+以上，序列标注要掌握，这是基础。
+
+接下来要了解腾讯云工单的处理相关问题。计算一个值，而不是简单的分难易的多分类。
+
+笔试：现在每天刷5道，每周三十道，希望自己能获得较大的提升。
 
