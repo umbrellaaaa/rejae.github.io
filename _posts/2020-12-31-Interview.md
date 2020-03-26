@@ -208,6 +208,87 @@ class Solution(object):
         return dp[n1][n2]
 ```
 
+<<<<<<< HEAD
+=======
+## 五道组合题
+337. 按摩师收益
+```python
+class Solution:
+    def massage(self, nums: List[int]) -> int:
+
+        # 递推： f(n)= f(n-2)+a[i] or f(n-1)
+        # if len(nums)==0:
+        #     return 0
+        # result = 0
+        # def recur(result,n):
+        #     if n == 2: return max(nums[0]+nums[2],nums[1])
+        #     if n == 1: return max(nums[0],nums[1])
+        #     if n == 0: return nums[0]
+
+        #     result += max(recur(result,n-2)+nums[n],recur(result,n-1))
+
+        #     return result
+
+        # result  = recur(result,len(nums)-1)
+        # return result
+
+        #将递推改为迭代
+        n = len(nums)
+        if n == 0 : return 0  
+
+        if n == 1: return nums[0]
+        if n == 2: return max(nums[0],nums[1])
+        if n == 3: return max(nums[0]+nums[2],nums[1])
+        f0 = nums[0]
+        f1 = max(nums[0],nums[1])
+        f2 = max(nums[0]+nums[2],nums[1])
+
+        a = f1
+        b = f2
+        
+        for i in range(3,len(nums)):
+
+            c = max(a+nums[i],b)
+            a = b
+            b = c
+        print(c)
+        return c
+```
+
+46. 全排列: 从第一个位置起，每一个与首位交换，生成包括原顺序在内的共n个nums，把头固定，从第二个位置按此逻辑进行。注意返回的时候，递归无法返回引用，要么用一个1*1的数组解决。
+
+```python
+class Solution(object):
+    def permute(self, nums):
+
+        n = len(nums)
+        # 递归，回溯，状态撤销
+
+        def trans_back(first = 0):#传入的是第i个将发生交换的位置,第一个默认为1
+            #当first到尾部的时候，返回排列
+            if first == n:
+                output.append(nums[:]) #由于nums在递归过程中不断变化，[:]表示复制
+            # 对于任何一个位置，发生交换次数为当前位置到末尾
+            for i in range(first,n):
+                # 注意到需要所有的排列，第一个位置也是一个选项，所以与本身做交换也方便
+                temp = nums[first]
+                nums[first] = nums[i]
+                nums[i] = temp
+                trans_back(first+1)
+                #撤销交换
+                temp = nums[first]
+                nums[first] = nums[i]
+                nums[i] = temp
+        
+        output = []
+        trans_back()
+        return output
+```
+
+
+
+
+>>>>>>> 8c2b786fc0f20b4f1f465bf582adde58058795c0
 ## 链表问题
 
 206. 反转链表
@@ -868,9 +949,16 @@ class Solution(object):
 样例输出
 10
 
+<<<<<<< HEAD
 提示
 样例解释，需要三次求和：
 第一次：sum[1][1] = sum[0][1] = 1, sum[1][2] = sum[0][1] + sum[0][2] = 1, sum[1][3] = sum[0][1] + sum[0][2] + sum[0][3] = 1, sum[1][4] = sum[0][1] + sum[0][2] + sum[0][3] + sum[0][4] = 1. sum[1][] = { 1, 1, 1, 1 };
 第二次：sum[2][] = { 1, 2, 3, 4 }.
 第三次：sum[3][] = { 1, 3, 6, 10 }.
 故sum[K][N] = sum[3][4] = 10
+=======
+
+
+1. word2vec 
+
+>>>>>>> 8c2b786fc0f20b4f1f465bf582adde58058795c0
