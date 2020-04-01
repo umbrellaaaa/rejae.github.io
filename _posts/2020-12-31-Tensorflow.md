@@ -15,6 +15,19 @@ tags:
 ## For what? 
 记录Tensorflow的用法, 从源代码学习编程方法。
 
+global_step:
+ refers to the number of batches seen by the graph. Every time a batch is provided, the weights are updated in the direction that minimizes the loss. global_step just keeps track of the number of batches seen so far. When it is passed in the minimize() argument list, the variable is increased by one. 
+
+
+## 参数解析
+
+>parser = argparse.ArgumentParser()
+
+>parser.add_argument('--do_train', action='store_true')
+
+store_true就代表着一旦有这个参数，做出动作“将其值标为True”，也就是没有时，默认状态下其值为False。反之亦然，store_false也就是默认为True，一旦命令中有此参数，其值则变为False。
+
+
 ## tf.reduce_sum 维度缩减
 
 ```python

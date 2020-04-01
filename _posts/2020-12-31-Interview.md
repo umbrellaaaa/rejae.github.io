@@ -208,8 +208,6 @@ class Solution(object):
         return dp[n1][n2]
 ```
 
-<<<<<<< HEAD
-=======
 ## 五道组合题
 337. 按摩师收益
 ```python
@@ -288,7 +286,6 @@ class Solution(object):
 
 
 
->>>>>>> 8c2b786fc0f20b4f1f465bf582adde58058795c0
 ## 链表问题
 
 206. 反转链表
@@ -949,16 +946,25 @@ class Solution(object):
 样例输出
 10
 
-<<<<<<< HEAD
 提示
 样例解释，需要三次求和：
 第一次：sum[1][1] = sum[0][1] = 1, sum[1][2] = sum[0][1] + sum[0][2] = 1, sum[1][3] = sum[0][1] + sum[0][2] + sum[0][3] = 1, sum[1][4] = sum[0][1] + sum[0][2] + sum[0][3] + sum[0][4] = 1. sum[1][] = { 1, 1, 1, 1 };
 第二次：sum[2][] = { 1, 2, 3, 4 }.
 第三次：sum[3][] = { 1, 3, 6, 10 }.
 故sum[K][N] = sum[3][4] = 10
-=======
 
 
-1. word2vec 
 
->>>>>>> 8c2b786fc0f20b4f1f465bf582adde58058795c0
+# 输入输出格式问题：
+python的输入：
+```python
+input() #输入一行数据
+list(map(int ,input().split())) #将一行数据通过map改变为int类型，然后转成list
+
+```
+
+
+
+
+
+
