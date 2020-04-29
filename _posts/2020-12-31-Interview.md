@@ -968,3 +968,105 @@ list(map(int ,input().split())) #将一行数据通过map改变为int类型，�
 
 
 
+#现给定任意正整数 n，请寻找并输出最小的正整数 m（m>9），使得 m 的各位（个位、十位、百位 ... ...）之乘积等于n，若不存在则输出 -1。
+
+def solution( n ):
+    # write code here
+    coins= [9,8,7,6,5,4,3,2]
+    ele_list = []
+    temp=[n]
+    def helper(temp):
+        print(temp[0])
+        if temp[0]==1:
+            return True
+
+        for i in coins:
+            if temp[0]%i==0 and temp[0]>=i:
+                ele_list.append(str(i))
+                print(i)
+                temp[0]=int(temp[0]/i)
+                return helper(temp)
+            continue
+            
+        if temp[0]>10:
+            return False
+
+    if helper(temp):
+        ele_list = ele_list[::-1]
+        return ''.join(ele_list)
+    return -1
+
+
+
+    # 
+def solution( n ):
+    # write code here
+    # 1, 2,3,  4,5,6  7,8,9,10
+    arr = []
+    count = 1
+    iner_count=0
+    def get_ans(nn,n):
+        print('mm=',nn)
+        ans = 0
+        for i in range(1,nn+1):
+            ans+=i**2
+
+        ans+=(n-((1+nn)*nn)/2)*(nn+1)
+        return int(ans)
+            
+    for i in range(1,99999999):
+        temp_area=[]
+        for j in range(count):
+            iner_count+=1
+            if iner_count>n:
+                return get_ans(len(arr[-1]),n)
+            temp_area.append(count)
+        count+=1
+        arr.append(temp_area)
+
+
+
+
+
+
+
+#输入m=1，n=2，表示最少1个键，最多2个键，符合要求的键数是1个键和2个键，其中1个键的有效模式有9种，两个键的有效模式有56种，
+#所以最终有效模式总数是9+56=65种，最终输出65。
+
+def solution( m , n ):
+    # A计算一种*4，B计算一种*4 + C
+    A=[1,3,7,9]
+    B=[2,4,6,8]
+    C=5
+    arr=[9]
+    used=[]
+    # 对于A中元素
+    ans=[0]
+    if m==1:
+        return 9
+    def get_m(used,m,count):
+        if m==0:
+            return
+        for i in range(1,10): 
+            if i not in used or used is None:
+                used.append(i)
+                element = used[-1]
+                if len(used)>1:
+                    if element in A:
+                        ans[0]+=5-count+1
+                    elif element in B:
+                        ans[0]+=7-count+1
+                    else:
+                        ans[0]+=1
+                get_m(used,m-1,count+1)
+                print('used.pop',used)
+                used.pop(-1)
+                count-=1
+    
+    get_m([],m,1)
+    return ans[0]
+        
+    
+    
+solution( 2 , 2 )
+    
