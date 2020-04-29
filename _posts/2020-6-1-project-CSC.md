@@ -373,3 +373,9 @@ flag = 5 * confidence + 2 * similarity - 5 > 0
 
 
 
+## 双输入 汉 拼
+
+拼还需要将 sentence的输入改动。
+
+加一个方法将汉字映射到拼音送到model
+

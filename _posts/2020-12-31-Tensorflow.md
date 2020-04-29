@@ -12,8 +12,37 @@ tags:
 <p id = "build"></p>
 ---
 
-## For what? 
-记录Tensorflow的用法, 从源代码学习编程方法。
+## Tensorflow开发流程
+- 1.定义输入节点
+- 2.定义“学习参数”的变量  W, b
+- 3.定义运算
+- 4.优化函数，优化目标
+- 5.初始化所有变量
+- 6.迭代更新参数到最优解
+- 7.测试模型
+- 8.使用模型
+
+## LOSS计算
+
+1. nce_loss
+cost = tf.reduce_mean(tf.nn.nce_loss(nce_weights, nce_biases, labels, selected_embed, num_sampled, voc_size))
+
+当我们设计一个模型来拟合数据时，经常会遇上指数族分布： p(x) = exp[p^(x)]/Z
+
+其中分母部分是归一化常数，一个目的是用来让这个分布真的成为一个“分布”要求（分布积分=1）.
+- 很多时候，比如计算一个巨大（几十上百万词）的词表在每一个词上的概率得分的时候，计算这个分母会变得非常非常非常消耗资源。
++ 所以在一些应用，比如一个language+model最后softmax层中，在inference阶段其实只要找到argmax的那一项就够了，并不需要归一化（当然，这个操作其实是错误的。正确的inference是计算出每一个词的概率作为分布，然后从这个分布中采样得到一个正确的词，而不是直接挑一个分数最大的。但是一切为了运算方便）。但在training+stage，由于分母Z中是包含了模型参数的，所以也要一起参与优化，所以这个计算省不了（当然，softmax这个函数比较特殊，在实际应用中也相当于没有计算这个归一化项，只是计算了ground-truth+word的那一项）。
+
+- 而NCE做了一件很intuitive的事情：用负样本采样的方式，不计算完整的归一化项。让模型通过负样本，估算出真实样本的概率，从而在真实样本上能做得了极大似然。相当于把任务转换成了一个分类任务，然后再用类似交叉熵的方式来对模型进行优化（其实本质上是优化了两个部分：模型本身，和一个负例采样的分布和参数）。
+
+- 另一方面，NCE其实证明了这种采样在负例足够多的情况下，对模型梯度优化方向和“完整计算归一化项进行优化”是一致的，这一点证明了NCE在用负采样方式解决归一化项的正确性。
+
++ 比较有意思的是，NCE这个东西其实不止能用在处理海量此表的Softmax之类的操作。它还可以用来处理那些无法计算Z的情况。例如如果你想预测的不是一个固定词表中的一个词，而是想要建模一个生成出来的continuous+vector（比如一张图片的feature+vector）的生成概率，这个时候“词表”是整个特征空间的连续积分，而不是简单的在词表上遍历求和，这时候这个归一化项根本是无法计算的，所以用负例采样，就能对生成这个continuous+vector的模型进行训练。换句话说，这就是类似搞GAN啊（其实GAN的loss+function和NCE是很像的）。最近的一个大规模video-pretrain的任务：Contrastive+Bidirectional+Transformer+for+Temporal+Representation+Learning也是用这样的一个思路来用一个Transformer对image+feature+vector进行encode和估计，感兴趣可以看一看。
+
++ 分享一个文章，是前人们为了解决“大词表Softmax”问题的各种聪明的方法，从Hierarchical+Softmax到NCE，应有尽有：[word-embeddings-softmax](https://link.zhihu.com/?target=http%3A//ruder.io/word-embeddings-softmax/)
+- 总结一下，我个人觉得NCE强大之处真的不只是能够解决巨大词表Softmax的运算量的问题，而是在于它能够解决归一化项中积分（而非求和）无法计算的问题，毕竟如果能够用采样替代计算整个积分，这玩意就能用来对生成模型进行建模了（例如GAN）。借用GitHub上一个NCE的code里的解释：+NCE+bridges+the+gap+between+generative+models+and+discriminative+models%2C+rather+than+simply+speedup+the+softmax+layer.&oq=当我们设计一个模型来拟合数据时，经常会遇上指数族分布：++++其中分母部分是归一化常数，一个目的是用来让这个分布真的成为一个“分布”要求（分布积分%3D1）.
+
+
 
 global_step:
  refers to the number of batches seen by the graph. Every time a batch is provided, the weights are updated in the direction that minimizes the loss. global_step just keeps track of the number of batches seen so far. When it is passed in the minimize() argument list, the variable is increased by one. 
@@ -331,7 +360,6 @@ def selu(x):
   model.add(Dense(32, kernel_initializer='lecun_normal', activation='selu'))
   model.add(Dense(16, kernel_initializer='lecun_normal', activation='selu'))
   model.add(Dense(n_classes, activation='softmax'))
-  ```
 
   Arguments:
       x: A tensor or variable to compute the activation function for.
@@ -339,7 +367,7 @@ def selu(x):
   Returns:
       The scaled exponential unit activation: `scale * elu(x, alpha)`.
 
-  # Note
+  #Note
       - To be used together with the initialization "[lecun_normal]
       (https://www.tensorflow.org/api_docs/python/tf/keras/initializers/lecun_normal)".
       - To be used together with the dropout variant "[AlphaDropout]
@@ -515,4 +543,7 @@ def get(identifier):
     raise ValueError('Could not interpret '
                      'activation function identifier:', identifier)
 
+
+
 ```
+

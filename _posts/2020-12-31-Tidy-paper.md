@@ -29,6 +29,8 @@ ACL
 
 AINLP
 
+谷歌学术
+
 ## 论文集
 
 
@@ -111,3 +113,6 @@ How to evaluate the falsealarm rate of a spelling check system with normal corpu
 
 [MASS](https://arxiv.org/pdf/1905.02450.pdf)
 
+
+## LDA
+[2003 Latent Dirichlet Allocation](http://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf)
