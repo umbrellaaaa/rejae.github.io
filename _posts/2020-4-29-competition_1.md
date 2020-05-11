@@ -266,3 +266,18 @@ with open('upload_1.txt','w',encoding='utf-8') as f:
 
 result_pre_df.to_csv('result_pre.csv')
 ```
+
+## Pandas
+
+1. 计算频率
+```python
+import pandas as pd
+data1 = {"a":[1.,3.,5.,2.],
+         "b":[4.,8.,3.,7.],
+         "c":[5.,45.,67.,34]}
+
+df1 = pd.DataFrame(data1)
+df2=df1.sum(axis=1)# 按行相加
+print(df1.div(df2, axis='rows'))#每一行除以对应的向量
+```
+2. 
