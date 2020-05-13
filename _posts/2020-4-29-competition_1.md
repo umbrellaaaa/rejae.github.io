@@ -359,6 +359,103 @@ ypred = bst.predict(data, num_iteration=bst.best_iteration)
 
 
 
+## word2vec
+
+将每个模块（序号）看成一个词，一个用户的所有操作就成了一篇文档
+
+将用户的点击历史按时间顺序排序后，成为一个sentence，运用word2vec。
+
+可解释性：
+
+- 用户的行为具有一定规律性
+- 文字的表达具有一定规律性
+
+```python
+creation = pd.read_csv('creative_id_df.csv')
+creation.head()
+
+sentences=[]
+for item in creation['sentence']:
+    #sent = ''.join(item[1:-1].split(','))
+    sent = list(item[1:-1].replace("'",'').split(','))
+    sentences.append(sent)
+
+
+import re  # For preprocessing
+import pandas as pd  # For data handling
+from time import time  # To time our operations
+from collections import defaultdict  # For word frequency
+import logging  # Setting up the loggings to monitor gensim
+logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt= '%H:%M:%S', level=logging.INFO)
+
+import multiprocessing
+from gensim.models import Word2Vec
+cores = multiprocessing.cpu_count() # Count the number of cores in a computer
+w2v_model = Word2Vec(min_count=1,
+                     window=2,
+                     size=300,
+                     sample=6e-5, 
+                     alpha=0.03, 
+                     min_alpha=0.0007, 
+                     negative=20,
+                     workers=cores-1)
+t = time()
+
+w2v_model.build_vocab(sentences, progress_per=10000)
+
+print('Time to build vocab: {} mins'.format(round((time() - t) / 60, 2)))
+
+w2v_model.corpus_count
+
+t = time()
+
+w2v_model.train(sentences, total_examples=w2v_model.corpus_count, epochs=5, report_delay=1)
+
+print('Time to train the model: {} mins'.format(round((time() - t) / 60, 2)))
+
+
+w2v_model.init_sims(replace=True)
+
+w2v_model.wv.most_similar(positive=["1223"])
+```
+
+model.wv.save_word2vec_format('model.bin', binary=True)
+
+
+现在我们有了序号对应的向量就要使用深度学习模型来训练和预测了。
+
+### 加载词向量
+[word2vec into tensorlfow](https://stackoverflow.com/questions/53353978/how-to-project-my-word2vec-model-in-tensorflow)
+[参考](https://www.xuqingtang.top/2019/05/15/%E5%9C%A8Keras%E7%9A%84Embedding%E5%B1%82%E4%B8%AD%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84word2vec%E8%AF%8D%E5%90%91%E9%87%8F/)
+[keras word2vec](https://keras-cn-docs.readthedocs.io/zh_CN/latest/blog/word_embedding/)
+[keras w2v kaggle demo](https://www.kaggle.com/lystdo/lstm-with-word2vec-embeddings)
+[stackoverflow w2v ](https://stackoverflow.com/questions/53353978/how-to-project-my-word2vec-model-in-tensorflow)
+```python
+import re  # For preprocessing
+import pandas as pd  # For data handling
+from time import time  # To time our operations
+from collections import defaultdict  # For word frequency
+import logging  # Setting up the loggings to monitor gensim
+logging.basicConfig(format="%(levelname)s - %(asctime)s: %(message)s", datefmt= '%H:%M:%S', level=logging.INFO)
+import gensim
+import multiprocessing
+from gensim.models import Word2Vec
+
+## 1 导入 预训练的词向量
+Word2VecModel = gensim.models.Word2Vec.load('w2v.model') # 读取词向量
+
+Word2VecModel.wv['260644']  # 词语的向量，是numpy格式
+```
+
+
+
+
+
+
+
+
 ## 参考
 
 [pandas 速查](https://zhuanlan.zhihu.com/p/29665562)
+[3Top/word2vec-api](https://github.com/3Top/word2vec-api)
+[kaggle gensim-word2vec-tutorial](https://www.kaggle.com/pierremegret/gensim-word2vec-tutorial)
