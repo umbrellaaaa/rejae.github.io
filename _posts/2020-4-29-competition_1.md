@@ -456,6 +456,30 @@ Word2VecModel.wv['260644']  # 词语的向量，是numpy格式
 
 ## 参考
 
+<<<<<<< HEAD
 [pandas 速查](https://zhuanlan.zhihu.com/p/29665562)
 [3Top/word2vec-api](https://github.com/3Top/word2vec-api)
 [kaggle gensim-word2vec-tutorial](https://www.kaggle.com/pierremegret/gensim-word2vec-tutorial)
+=======
+<<<<<<< HEAD
+result_pre_df.to_csv('result_pre.csv')
+```
+
+## Pandas
+
+1. 计算频率
+```python
+import pandas as pd
+data1 = {"a":[1.,3.,5.,2.],
+         "b":[4.,8.,3.,7.],
+         "c":[5.,45.,67.,34]}
+
+df1 = pd.DataFrame(data1)
+df2=df1.sum(axis=1)# 按行相加
+print(df1.div(df2, axis='rows'))#每一行除以对应的向量
+```
+2. 
+=======
+[pandas 速查](https://zhuanlan.zhihu.com/p/29665562)
+>>>>>>> f92c81c5c2f5e2c54933d64966e66a4da35899bf
+>>>>>>> 74824c7340936a57c4febd8ad3774ba7192d89dd
