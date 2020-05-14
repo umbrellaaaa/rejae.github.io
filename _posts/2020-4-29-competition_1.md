@@ -361,7 +361,6 @@ ypred = bst.predict(data, num_iteration=bst.best_iteration)
 
 ## 参考
 
-<<<<<<< HEAD
 result_pre_df.to_csv('result_pre.csv')
 ```
 
@@ -379,6 +378,4 @@ df2=df1.sum(axis=1)# 按行相加
 print(df1.div(df2, axis='rows'))#每一行除以对应的向量
 ```
 2. 
-=======
 [pandas 速查](https://zhuanlan.zhihu.com/p/29665562)
->>>>>>> f92c81c5c2f5e2c54933d64966e66a4da35899bf
